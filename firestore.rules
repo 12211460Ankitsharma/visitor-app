@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // visitors collection
+    match /visitors/{docId} {
+
+      // Koi bhi naya entry create kar sakta hai
+      allow create: if
+        request.resource.data.keys().hasAll(['appId','name','contact','category','inTime','date','status']) &&
+        request.resource.data.status == 'inside';
+
+      // Sirf outTime aur status update allowed hai (exit flow)
+      allow update: if
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['outTime', 'status', 'exitedAt']) &&
+        request.resource.data.status == 'exited';
+
+      // Read allowed (exit page ke liye)
+      allow read: if true;
+
+      // Delete allowed nahi
+      allow delete: if false;
+    }
+
+    // visitor_master collection — one doc per phone number (doc ID = phone)
+    // Stores reusable visitor profile: name, whom, purpose, idNumber — the
+    // same fields already on the entry form, so repeat visits can auto-fill.
+    match /visitor_master/{phone} {
+
+      // Create only if the doc ID matches the phone field (prevents spoofing
+      // another visitor's record) and required keys are present.
+      allow create: if
+        phone == request.resource.data.phone &&
+        phone.matches('^[6-9][0-9]{9}$') &&
+        request.resource.data.keys().hasAll(['phone','name']);
+
+      // Only profile fields + bookkeeping may ever change; phone (doc ID
+      // equivalent) and createdAt are immutable once written.
+      allow update: if
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name','whom','purpose','idNumber','updatedAt','visitCount']) &&
+        request.resource.data.phone == resource.data.phone &&
+        request.resource.data.createdAt == resource.data.createdAt;
+
+      // Read allowed (needed for phone-based auto-fill lookup)
+      allow read: if true;
+
+      // Master profile must never be deleted
+      allow delete: if false;
+    }
+  }
+}

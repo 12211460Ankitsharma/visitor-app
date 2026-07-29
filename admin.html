@@ -1,0 +1,2785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiara Jewellery — Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'DM Sans', sans-serif; background: #faf8f5; color: #1a1a2e; }
+    .hidden { display: none !important; }
+
+    /* LOGIN */
+    .login-wrap { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #fffdf9 0%, #fdf3e3 100%); overflow-y: auto; }
+    .login-card { background: #fff; border-radius: 20px; padding: 36px 28px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(124,92,46,0.12); border: 1px solid #e8ddd0; }
+    .login-logo { margin: 0 auto 14px; display: flex; justify-content: center; }
+    .login-logo img { height: 60px; object-fit: contain; }
+    .login-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #7c5c2e; margin-bottom: 4px; }
+    .login-sub { text-align: center; font-size: 13px; color: #9ca3af; margin-bottom: 28px; }
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 12px; font-weight: 600; color: #6b5035; margin-bottom: 6px; }
+    .input-group input { width: 100%; padding: 11px 14px; border: 1px solid #e0d3c0; border-radius: 9px; font-size: 14px; font-family: 'DM Sans', sans-serif; transition: border 0.15s; }
+    .input-group input:focus { outline: none; border-color: #c9973a; box-shadow: 0 0 0 3px rgba(201,151,58,0.1); }
+    .login-btn { width: 100%; padding: 13px; background: #c9973a; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .login-btn:hover { background: #b5862e; }
+    .login-error { color: #dc2626; font-size: 13px; text-align: center; margin-top: 12px; }
+
+    /* NAVBAR */
+    .navbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; background: #fff; border-bottom: 1px solid #e8ddd0; position: sticky; top: 0; z-index: 10; }
+    .logo-area { display: flex; align-items: center; gap: 10px; }
+    .logo-img { height: 36px; object-fit: contain; }
+    .nav-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #7c5c2e; }
+    .nav-badge { padding: 3px 10px; background: #fdf3e3; color: #c9973a; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid #f0dbb8; }
+    .logout-btn { padding: 7px 14px; background: #fff; border: 1px solid #e8ddd0; border-radius: 8px; font-size: 13px; cursor: pointer; color: #6b7280; font-family: 'DM Sans', sans-serif; }
+    .logout-btn:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+
+    /* DASHBOARD */
+    .dashboard { padding: 20px 24px; max-width: 1300px; margin: 0 auto; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: #fff; border: 1px solid #e8ddd0; border-radius: 14px; padding: 16px 18px; }
+    .stat-label { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; }
+    .stat-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #c9973a; margin-top: 4px; }
+    .stat-sub { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+
+    /* FILTER BAR */
+    .filter-bar { background: #fff; border: 1px solid #e8ddd0; border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; }
+    .filter-group label { font-size: 11px; font-weight: 600; color: #6b5035; }
+    .filter-group input, .filter-group select { padding: 8px 12px; border: 1px solid #e0d3c0; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: #fff; }
+    .filter-group input:focus, .filter-group select:focus { outline: none; border-color: #c9973a; }
+    .filter-btn { padding: 8px 18px; background: #c9973a; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .filter-btn:hover { background: #b5862e; }
+    .today-btn { padding: 8px 18px; background: #fdf3e3; color: #c9973a; border: 1px solid #f0dbb8; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .download-btn { padding: 8px 18px; background: #16a34a; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-left: auto; font-family: 'DM Sans', sans-serif; }
+    .download-btn:hover { background: #15803d; }
+
+    /* TABLE */
+    .table-wrap { background: #fff; border: 1px solid #e8ddd0; border-radius: 14px; overflow: hidden; }
+    .table-header { padding: 14px 20px; border-bottom: 1px solid #e8ddd0; display: flex; align-items: center; justify-content: space-between; }
+    .table-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #7c5c2e; }
+    .table-count { font-size: 12px; color: #9ca3af; background: #faf8f5; padding: 3px 10px; border-radius: 10px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { background: #fffbf3; padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e8ddd0; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid #f5f0ea; transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fffbf3; }
+    tbody td { padding: 11px 14px; color: #1a1a2e; white-space: nowrap; }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-inside { background: #dcfce7; color: #15803d; }
+    .badge-exited { background: #fee2e2; color: #dc2626; }
+    .cat-pill { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; background: #fdf3e3; color: #c9973a; }
+    .photo-thumb { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ddd0; }
+    .no-photo { width: 32px; height: 32px; border-radius: 50%; background: #fdf3e3; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #c9973a; }
+
+    /* EMPTY */
+    .empty-state { padding: 48px 20px; text-align: center; color: #9ca3af; }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-text { font-size: 14px; }
+
+    /* LOADER */
+    .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 14px; }
+    .spinner { width: 36px; height: 36px; border: 3px solid #f0dbb8; border-top-color: #c9973a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 14px; color: #9ca3af; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+
+    /* DETAIL PANEL */
+    tr[id^="detail-"] td { background: #fffdf9; }
+    tr[id^="detail-"] td > div { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    tbody tr:hover td { background: #fffbf3 !important; }
+    tbody tr[id^="detail-"]:hover td { background: #fffdf9 !important; }
+
+    @media (max-width: 600px) {
+      .dashboard { padding: 14px; }
+      .filter-bar { flex-direction: column; }
+      .download-btn { margin-left: 0; width: 100%; justify-content: center; }
+    }
+
+    /* SIDEBAR */
+    .app-layout { display: flex; height: calc(100vh - 56px); overflow: hidden; }
+    .sidebar {
+      width: 200px; min-width: 200px; background: #fff;
+      border-right: 1px solid #e8ddd0;
+      padding: 20px 0; display: flex; flex-direction: column; gap: 4px;
+    }
+    .sidebar-label {
+      padding: 6px 20px; font-size: 10px; color: #9ca3af;
+      font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; cursor: pointer; transition: all 0.15s;
+      font-size: 14px; font-weight: 500; color: #5c4020;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-item:hover { background: #fdf3e3; color: #c9973a; }
+    .sidebar-item.active { background: #fdf3e3; color: #c9973a; border-left-color: #c9973a; font-weight: 600; }
+    .sidebar-icon { font-size: 18px; }
+    .main-content { flex: 1; overflow-y: auto; }
+
+    @media (max-width: 600px) {
+      .sidebar { width: 60px; min-width: 60px; }
+      .sidebar-item span:last-child { display: none; }
+      .sidebar-label { display: none; }
+    }
+
+    /* CONTRACT WORKER MANAGEMENT */
+    .cw-panel { padding: 20px 24px; max-width: 1300px; margin: 0 auto; }
+    .cw-form-card { background:#fff; border:1px solid #e8ddd0; border-radius:14px; padding:24px; margin-bottom:20px; }
+    .cw-form-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:#7c5c2e; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid #e8ddd0; display:flex; align-items:center; justify-content:space-between; }
+    .cw-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .cw-full { grid-column:1/-1; }
+    .cw-field { display:flex; flex-direction:column; gap:6px; }
+    .cw-label { font-size:12px; font-weight:600; color:#6b5035; }
+    .cw-input, .cw-select { width:100%; padding:9px 12px; border:1px solid #e0d3c0; border-radius:9px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fff; color:#1a1a2e; transition:border 0.15s; }
+    .cw-input:focus, .cw-select:focus { outline:none; border-color:#c9973a; box-shadow:0 0 0 3px rgba(201,151,58,0.1); }
+    .cw-photo-area { border:1.5px dashed #e0d3c0; border-radius:10px; padding:18px; text-align:center; cursor:pointer; background:#faf8f5; transition:border-color 0.2s; }
+    .cw-photo-area:hover { border-color:#c9973a; background:#fffbf3; }
+    .cw-save-btn { margin-top:20px; padding:12px 28px; background:#c9973a; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:6px; }
+    .cw-save-btn:hover { background:#b5862e; }
+    .cw-list-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:16px; margin-top:16px; }
+    .cw-worker-card { background:#fff; border:1px solid #e8ddd0; border-radius:14px; padding:20px 14px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; position:relative; }
+    .cw-worker-photo { width:68px; height:68px; border-radius:50%; object-fit:cover; border:3px solid #f0dbb8; }
+    .cw-worker-initials { width:68px; height:68px; border-radius:50%; background:#fdf3e3; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#c9973a; border:3px solid #f0dbb8; }
+    .cw-worker-name { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:#1a1a2e; margin-top:4px; }
+    .cw-worker-info { font-size:11.5px; color:#9ca3af; line-height:1.5; }
+    .cw-worker-id { font-size:11px; font-weight:700; color:#c9973a; letter-spacing:0.5px; background:#fdf3e3; padding:2px 8px; border-radius:8px; }
+    .cw-qr-container { padding:8px; background:#fff; border:1px solid #e8ddd0; border-radius:8px; margin:6px 0 2px; }
+    .cw-card-btns { display:flex; gap:8px; width:100%; margin-top:6px; }
+    .cw-download-btn { flex:1; padding:7px 8px; background:#fdf3e3; color:#c9973a; border:1px solid #f0dbb8; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
+    .cw-download-btn:hover { background:#f5e4c0; }
+    .cw-delete-btn { padding:7px 10px; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:8px; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+    .cw-delete-btn:hover { background:#fecaca; }
+    @media(max-width:768px){ .cw-grid { grid-template-columns:1fr; } .cw-full { grid-column:1; } }
+    @media(max-width:600px){ .cw-panel { padding:14px 12px; } .cw-list-grid { grid-template-columns:1fr 1fr; } }
+    @media(max-width:400px){ .cw-list-grid { grid-template-columns:1fr; } }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="loader-overlay hidden" id="loader">
+  <div class="spinner"></div>
+  <div class="loader-text" id="loader-text">Loading...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo"><img src="data:image/png;base64,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" alt="Kiara" /></div>
+      <div class="login-title">Admin Login</div>
+      <div class="login-sub">Kiara Jewellery — Restricted Access</div>
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="Username" autocomplete="username" />
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()" />
+      </div>
+      <button class="login-btn" onclick="doLogin()">Login →</button>
+      <div class="login-error hidden" id="login-error">❌ Username ya password galat hai</div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-screen" class="hidden">
+  <div class="navbar">
+    <div class="logo-area">
+      <img src="data:image/png;base64,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" alt="Kiara" class="logo-img" />
+      <span class="nav-title">Admin Panel</span>
+      <span class="nav-badge">Kiara Jewellery</span>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-label">Data Views</div>
+      <div class="sidebar-item active" id="sb-visitors" onclick="switchView('visitors')">
+        <span class="sidebar-icon">👤</span>
+        <span>Visitors</span>
+      </div>
+      <div class="sidebar-item" id="sb-workers" onclick="switchView('workers')">
+        <span class="sidebar-icon">👷</span>
+        <span>Karigar</span>
+      </div>
+      <div class="sidebar-item" id="sb-interview" onclick="switchView('interview')">
+        <span class="sidebar-icon">🎤</span>
+        <span>Interview</span>
+      </div>
+      <div class="sidebar-item" id="sb-add-worker" onclick="switchView('add-worker')">
+        <span class="sidebar-icon">➕</span>
+        <span>Add Karigar</span>
+      </div>
+      <div class="sidebar-item" id="sb-add-visitor" onclick="switchView('add-visitor')">
+        <span class="sidebar-icon">➕</span>
+        <span>Add Permanent Visitor</span>
+      </div>
+    </div>
+    <div class="main-content">
+
+  <div class="dashboard">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Visitors</div><div class="stat-value" id="stat-total">—</div><div class="stat-sub">Aaj ki entries</div></div>
+      <div class="stat-card"><div class="stat-label">Inside Now</div><div class="stat-value" id="stat-inside" style="color:#16a34a;">—</div><div class="stat-sub">Abhi andar hain</div></div>
+      <div class="stat-card"><div class="stat-label">Exited</div><div class="stat-value" id="stat-exited" style="color:#dc2626;">—</div><div class="stat-sub">Ja chuke hain</div></div>
+      <div class="stat-card"><div class="stat-label">Today</div><div class="stat-value" id="stat-today" style="color:#d97706;">—</div><div class="stat-sub">Aaj ki Total aagman</div></div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group"><label>From Date</label><input type="date" id="from-date" /></div>
+      <div class="filter-group"><label>To Date</label><input type="date" id="to-date" /></div>
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="filter-cat" style="padding:8px 12px;border:1px solid #e0d3c0;border-radius:8px;font-size:13px;background:#fff;color:#5c4020;">
+            <option value="">All</option>
+            <!-- Visitor categories -->
+            <optgroup label="Visitor Categories">
+              <option>Interview</option>
+              <option>Meeting</option>
+              <option>QC</option>
+              <option>Maintenance</option>
+              <option>Vendor</option>
+              <option>Delivery</option>
+            </optgroup>
+            <!-- Worker designations -->
+            <optgroup label="Worker Designations">
+              <option>Filler</option>
+              <option>Polisher</option>
+              <option>Rhodium</option>
+              <option>Laser</option>
+              <option>Setter</option>
+              <option>Ultra Cleaning</option>
+              <option>Trainee</option>
+              <option>Casting</option>
+              <option>QC</option>
+              <option>Helper</option>
+              <option>CPX</option>
+              <option>Waxing</option>
+              <option>Refining</option>
+            </optgroup>
+          </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="filter-status">
+          <option value="">All</option>
+          <option value="inside">Inside</option>
+          <option value="exited">Exited</option>
+        </select>
+      </div>
+      <button class="today-btn" onclick="setToday()">Today</button>
+      <button class="filter-btn" onclick="applyFilter()">🔍 Filter</button>
+      <button class="download-btn" onclick="downloadCSV()" id="excel-download-btn">⬇️ Download Excel (.xlsx + Photos)</button>
+      <button class="download-btn" onclick="downloadWorkerMonthlyReport()" id="worker-report-btn" style="background:#2563eb;margin-left:8px;display:none;">📊 Monthly Report</button>
+      <button class="download-btn" onclick="downloadPDF()" id="pdf-download-btn" style="background:#dc2626;margin-left:8px;display:none;">📄 Download PDF (Interview Only)</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="table-title">Visitor Records</span>
+        <span id="view-heading" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#7c5c2e;margin-right:12px;">👤 Visitors</span><span class="table-count" id="table-count">0 records</span>
+      </div>
+      <div class="table-scroll">
+        <table id="visitor-table">
+          <thead id="table-head">
+            <tr>
+              <th>Photo</th>
+              <th>App ID</th>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Aadhaar/PAN</th>
+              <th>Category</th>
+              <th>Meeting With</th>
+              <th>Purpose</th>
+              <th>In-Time</th>
+              <th>Out-Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="empty-state hidden" id="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Koi record nahi mila</div>
+      </div>
+    </div>
+  </div>
+
+    <!-- CONTRACT WORKERS PANEL -->
+    <div id="contract-workers-panel" class="hidden">
+      <div class="cw-panel">
+        <!-- Add Worker Form -->
+        <div class="cw-form-card">
+          <div class="cw-form-title"><span>➕ Add New Contract Karigar</span></div>
+          <div class="cw-grid">
+            <div class="cw-field">
+              <label class="cw-label">Karigar Name *</label>
+              <input type="text" id="cw-name" placeholder="Full name" class="cw-input" />
+            </div>
+            <div class="cw-field">
+              <label class="cw-label">Contact Number *</label>
+              <input type="tel" id="cw-contact" placeholder="10-digit number" maxlength="10" class="cw-input" />
+            </div>
+            <div class="cw-field">
+              <label class="cw-label">Department</label>
+              <select id="cw-dept" class="cw-select">
+                <option value="">-- Select --</option>
+                <option>Production</option><option>Casting</option><option>Rhodium</option>
+                <option>CAD/PD</option><option>Pantry</option><option>QA/QC</option>
+                <option>Refinery</option><option>Custodian</option><option>Sales &amp; Marketing</option>
+                <option>mold maker</option><option>diamond</option><option>waxing</option><option>Intern</option>
+              </select>
+            </div>
+            <div class="cw-field">
+              <label class="cw-label">Work Type / Designation</label>
+              <select id="cw-desig" class="cw-select">
+                <option value="">-- Select --</option>
+                <option>Filler</option><option>Polisher</option><option>Rhodium</option><option>Laser</option>
+                <option>Setter</option><option>Ultra Cleaning</option><option>Trainee</option>
+                <option>Casting</option><option>QC</option><option>Helper</option><option>CPX</option>
+                <option>Waxing</option><option>Refining</option><option>Micro Setter</option>
+                <option>Hand Setter</option><option>Assorter</option><option>Security</option>
+                <option>Tree Maker</option><option>Wax Cleaner</option><option>CAD Designer</option>
+                <option>Manual Designer</option><option>Mould Cutter</option><option>Maintenance</option>
+                <option>PPC</option><option>Marketing</option><option>House Keeping</option>
+                <option>Handy Man</option><option>Bagging</option><option>caster</option><option>intern</option><option>puller</option>
+                <option>bagger</option><option>L.D.</option><option>filler assembler</option><option>accountant</option><option>FQC</option>
+              </select>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Contractor Name</label>
+              <select id="cw-contractor" class="cw-select">
+                <option value="">-- Select --</option>
+                <option>kiara payroll</option>
+                <option>Mahendar Mehra</option><option>Prashant Mahadik</option>
+                <option>Ashok Yadav</option><option>Santosh Vishwakarma</option>
+                <option>Sawai Singh</option><option>Rahul Yadav</option>
+              </select>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Aadhaar / PAN Card — Last 4 digits/characters *</label>
+              <input type="text" id="cw-idnum" placeholder="e.g. 4821 (last 4 of Aadhaar ya PAN)" maxlength="4" class="cw-input" style="letter-spacing:3px;font-size:16px;font-weight:600;text-transform:uppercase;" oninput="this.value=this.value.replace(/[^a-zA-Z0-9]/g,'').toUpperCase()" />
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Aadhaar ke last 4 digits <b>ya</b> PAN card ke last 4 characters mein se ek zaroor bharein</div>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Karigar Photo</label>
+              <div id="cw-photo-area" class="cw-photo-area" onclick="openCWCamera()">
+                <img id="cw-photo-preview" src="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #c9973a;display:none;margin:0 auto 8px;" />
+                <div id="cw-photo-icon" style="font-size:24px;margin-bottom:6px;">📷</div>
+                <div style="font-size:12px;color:#9ca3af;"><span style="color:#c9973a;font-weight:600;">Click to open camera</span> or upload photo</div>
+              </div>
+              <input type="file" id="cw-photo-input" accept="image/*" capture="user" class="hidden" onchange="handleCWPhoto(this)" />
+            </div>
+          </div>
+          <button class="cw-save-btn" onclick="saveContractWorker()">💾 Save Karigar &amp; Generate QR</button>
+        </div>
+
+        <!-- Workers List -->
+        <div class="cw-form-card">
+          <div class="cw-form-title" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>📋 Contract Karigar (QR Cards)</span>
+            <span id="cw-count" style="font-size:12px;color:#9ca3af;background:#faf8f5;padding:3px 10px;border-radius:10px;">0 karigar</span>
+          </div>
+          <div id="cw-list-grid" class="cw-list-grid">
+            <div style="text-align:center;color:#9ca3af;padding:32px;grid-column:1/-1;">Loading...</div>
+          </div>
+        </div>
+      
+        <!-- Monthly Report for single Karigar -->
+        <div class="cw-form-card">
+          <div class="cw-form-title">📅 Karigar Monthly Report</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;padding-top:8px;">
+            <div style="min-width:220px;">
+              <label class="cw-label">Report</label>
+              <div class="cw-input" style="background:#f9fafb;cursor:default;">All Karigars</div>
+            </div>
+            <div style="min-width:180px;">
+              <label class="cw-label">Month</label>
+              <input type="month" id="monthly-month" class="cw-input" />
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="filter-btn" onclick="renderAllKarigarMonthlyReport()">Show Report</button>
+              <button class="download-btn" style="background:#2563eb;" onclick="downloadAllKarigarMonthlyExcel()">⬇️ Download Excel</button>
+            </div>
+          </div>
+          <div style="margin-top:12px;overflow:auto;">
+            <table id="monthly-report-table" style="min-width:900px;">
+              <thead>
+                <tr>
+                  <th>Date</th><th>Photo</th><th>Name</th><th>Worker ID</th><th>In-Time</th><th>Out-Time</th><th>Total Hours</th><th>Attendance</th>
+                </tr>
+              </thead>
+              <tbody id="monthly-report-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERMANENT VISITOR PANEL -->
+    <div id="permanent-visitor-panel" class="hidden">
+      <div class="cw-panel">
+        <!-- Add Permanent Visitor Form -->
+        <div class="cw-form-card">
+          <div class="cw-form-title"><span>➕ Add New Permanent Visitor</span></div>
+          <div class="cw-grid">
+            <div class="cw-field cw-full">
+              <label class="cw-label">Full Name *</label>
+              <input type="text" id="pv-name" placeholder="Visitor's full name" class="cw-input" />
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Contact Number * (WhatsApp)</label>
+              <input type="tel" id="pv-contact" placeholder="10-digit number" maxlength="10" class="cw-input" />
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Whom to See / Meet *</label>
+              <select id="pv-whom" class="cw-select">
+                <option value="">-- Select --</option>
+                <option value="HR-Abhilasha Alandkar">HR-Abhilasha Alandkar</option>
+                <option value="Mr. Suresh Sharma">Mr. Suresh Sharma</option>
+                <option value="Mr. Rajendar Rawat">Mr. Rajendar Rawat</option>
+                <option value="Mr. Dhimant Limbachiya">Mr. Dhimant Limbachiya</option>
+                <option value="Mr. Santosh Sharma">Mr. Santosh Sharma</option>
+                <option value="Mr. Bhavin Gopani">Mr. Bhavin Gopani</option>
+                <option value="Mr. Santosh Patil">Mr. Santosh Patil</option>
+              </select>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Purpose</label>
+              <select id="pv-purpose" class="cw-select">
+                <option value="">-- Select Purpose --</option>
+                <option value="Meeting">Meeting</option>
+                <option value="QC">QC</option>
+                <option value="Factory Visit">Factory Visit</option>
+                <option value="General">General Visit</option>
+              </select>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Aadhaar / PAN Card / Passport — Last 4 digits/characters *</label>
+              <input type="text" id="pv-idnum" placeholder="e.g. 4821 (last 4 of any one ID)" maxlength="4" class="cw-input" style="letter-spacing:3px;font-size:16px;font-weight:600;text-transform:uppercase;" oninput="this.value=this.value.replace(/[^a-zA-Z0-9]/g,'').toUpperCase()" />
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Aadhaar ke last 4 digits <b>ya</b> PAN ke last 4 characters <b>ya</b> Passport ke last 4 characters</div>
+            </div>
+            <div class="cw-field cw-full">
+              <label class="cw-label">Visitor Photo</label>
+              <div id="pv-photo-area" class="cw-photo-area" onclick="openPVCamera()">
+                <img id="pv-photo-preview" src="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #c9973a;display:none;margin:0 auto 8px;" />
+                <div id="pv-photo-icon" style="font-size:24px;margin-bottom:6px;">📷</div>
+                <div style="font-size:12px;color:#9ca3af;"><span style="color:#c9973a;font-weight:600;">Click to open camera</span> or upload photo</div>
+              </div>
+              <input type="file" id="pv-photo-input" accept="image/*" capture="user" class="hidden" onchange="handlePVPhoto(this)" />
+            </div>
+          </div>
+          <button class="cw-save-btn" onclick="savePermanentVisitor()">💾 Save Visitor &amp; Generate QR</button>
+        </div>
+
+        <!-- Permanent Visitors List -->
+        <div class="cw-form-card">
+          <div class="cw-form-title" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>📋 Permanent Visitors (QR Cards)</span>
+            <span id="pv-count" style="font-size:12px;color:#9ca3af;background:#faf8f5;padding:3px 10px;border-radius:10px;">0 visitors</span>
+          </div>
+          <div id="pv-list-grid" class="cw-list-grid">
+            <div style="text-align:center;color:#9ca3af;padding:32px;grid-column:1/-1;">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- end main-content -->
+  </div><!-- end app-layout -->
+
+<!-- FIREBASE + LOGIC -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBa7tKu4orPvXB1i_pPb0YcrURGtI1c7ug",
+    authDomain: "gateclear-visitor.firebaseapp.com",
+    projectId: "gateclear-visitor",
+    storageBucket: "gateclear-visitor.firebasestorage.app",
+    messagingSenderId: "1065835049064",
+    appId: "1:1065835049064:web:7c5b0cdce6ce8cf7844bdd",
+    measurementId: "G-YN0LVCKS18"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const ADMIN_USERS = [
+    { user: "Anjani", pass: "Anjani@123" },
+    { user: "HR",     pass: "HR@456" },
+  ];
+
+  let allVisitors = [];
+  let allWorkers = [];
+  let allInterviewAdditional = [];
+  let allContractWorkers = [];
+  let allPermanentVisitors = [];
+  let cwPhotoBase64 = '';
+  let pvPhotoBase64 = '';
+  let filteredRecords = [];
+  let currentView = 'visitors'; // 'visitors', 'workers', 'interview', 'add-worker', 'add-visitor'
+
+  function showLoader(text = 'Loading...') {
+    document.getElementById('loader-text').textContent = text;
+    document.getElementById('loader').classList.remove('hidden');
+  }
+  function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+
+  function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+  window.doLogin = function() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value;
+    if (ADMIN_USERS.some(a => a.user === u && a.pass === p)) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard-screen').classList.remove('hidden');
+      setToday();
+      loadData();
+    } else {
+      document.getElementById('login-error').classList.remove('hidden');
+    }
+  };
+
+  window.doLogout = function() {
+    document.getElementById('dashboard-screen').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-error').classList.add('hidden');
+  };
+
+  window.setToday = function() {
+    const t = todayStr();
+    document.getElementById('from-date').value = t;
+    document.getElementById('to-date').value = t;
+    document.getElementById('filter-cat').value = '';
+    document.getElementById('filter-status').value = '';
+    if (allVisitors.length > 0 || allWorkers.length > 0) applyFilter();
+  };
+
+  window.switchView = function(view) {
+    currentView = view;
+    // Update sidebar
+    document.getElementById('sb-visitors').classList.toggle('active', view === 'visitors');
+    document.getElementById('sb-workers').classList.toggle('active', view === 'workers');
+    document.getElementById('sb-interview').classList.toggle('active', view === 'interview');
+    document.getElementById('sb-add-worker').classList.toggle('active', view === 'add-worker');
+    document.getElementById('sb-add-visitor').classList.toggle('active', view === 'add-visitor');
+    // Update heading
+    const heading = document.getElementById('view-heading');
+    const labels = { visitors: '👤 Visitors', workers: '👷 Karigar', interview: '🎤 Interview', 'add-worker': '➕ Add Karigar', 'add-visitor': '➕ Add Permanent Visitor' };
+    if(heading) heading.textContent = labels[view] || '👤 Visitors';
+
+    // Show/hide PDF download button
+    const pdfBtn = document.getElementById('pdf-download-btn');
+    if(pdfBtn) {
+      pdfBtn.style.display = view === 'interview' ? 'inline-flex' : 'none';
+    }
+    const workerReportBtn = document.getElementById('worker-report-btn');
+    if (workerReportBtn) workerReportBtn.style.display = view === 'workers' ? 'inline-flex' : 'none';
+
+    // Update table title
+    const tableTitle = document.querySelector('.table-title');
+    if(tableTitle) {
+      tableTitle.textContent = view === 'interview' ? 'Interview Records' :
+                              view === 'workers' ? 'Karigar Records' : 'Visitor Records';
+    }
+
+    // Show/hide contract workers panel, permanent visitor panel and main dashboard
+    const contractPanel = document.getElementById('contract-workers-panel');
+    const permanentVisitorPanel = document.getElementById('permanent-visitor-panel');
+    const mainDashboard = document.querySelector('.dashboard');
+    if (view === 'add-worker') {
+      if(contractPanel) contractPanel.classList.remove('hidden');
+      if(permanentVisitorPanel) permanentVisitorPanel.classList.add('hidden');
+      if(mainDashboard) mainDashboard.classList.add('hidden');
+      renderContractWorkers(allContractWorkers);
+      return; // Don't call applyFilter for this view
+    } else if (view === 'add-visitor') {
+      if(contractPanel) contractPanel.classList.add('hidden');
+      if(permanentVisitorPanel) permanentVisitorPanel.classList.remove('hidden');
+      if(mainDashboard) mainDashboard.classList.add('hidden');
+      renderPermanentVisitors(allPermanentVisitors);
+      return; // Don't call applyFilter for this view
+    } else {
+      if(contractPanel) contractPanel.classList.add('hidden');
+      if(mainDashboard) mainDashboard.classList.remove('hidden');
+    }
+
+    applyFilter();
+  };
+
+  async function loadData() {
+    showLoader('Firestore se data load ho raha hai...');
+    try {
+      // Load visitors
+      const qv = query(collection(db, 'visitors'), orderBy('createdAt', 'desc'));
+      const snapV = await getDocs(qv);
+      allVisitors = [];
+      snapV.forEach(doc => { allVisitors.push({ id: doc.id, ...doc.data() }); });
+
+      // Load workers
+      const qw = query(collection(db, 'workers'), orderBy('createdAt', 'desc'));
+      const snapW = await getDocs(qw);
+      allWorkers = [];
+      snapW.forEach(doc => { allWorkers.push({ id: doc.id, ...doc.data() }); });
+
+      // Load interview application data
+      const qi = query(collection(db, 'interview_applications'), orderBy('createdAt', 'desc'));
+      const snapI = await getDocs(qi);
+      allInterviewAdditional = [];
+      snapI.forEach(doc => { allInterviewAdditional.push({ id: doc.id, ...doc.data() }); });
+
+      // Load contractual workers
+      const qcw = query(collection(db, 'contractual_workers'), orderBy('createdAt', 'desc'));
+      const snapCW = await getDocs(qcw);
+      allContractWorkers = [];
+      snapCW.forEach(docSnap => { allContractWorkers.push({ id: docSnap.id, ...docSnap.data() }); });
+      renderContractWorkers(allContractWorkers);
+
+      // Load permanent visitors
+      const qpv = query(collection(db, 'permanent_visitors'), orderBy('createdAt', 'desc'));
+      const snapPV = await getDocs(qpv);
+      allPermanentVisitors = [];
+      snapPV.forEach(docSnap => { allPermanentVisitors.push({ id: docSnap.id, ...docSnap.data() }); });
+      renderPermanentVisitors(allPermanentVisitors);
+
+      const todayVisitors = allVisitors.filter(r => r.date === todayStr()).length;
+      const todayWorkers = allWorkers.filter(r => r.date === todayStr()).length;
+      document.getElementById('stat-today').textContent = todayVisitors + todayWorkers;
+
+      hideLoader();
+      applyFilter();
+    } catch (err) {
+      hideLoader();
+      showToast('❌ Error loading data: ' + err.message);
+    }
+  }
+
+  window.applyFilter = function() {
+    const from   = document.getElementById('from-date').value;
+    const to     = document.getElementById('to-date').value;
+    const cat    = document.getElementById('filter-cat').value;
+    const status = document.getElementById('filter-status').value;
+
+    let source;
+    if (currentView === 'workers') source = allWorkers;
+    else if (currentView === 'interview') source = allInterviewAdditional;
+    else source = allVisitors; // visitors view
+
+    filteredRecords = source.filter(r => {
+      // For interview additional data, filter by createdAt timestamp
+      if (currentView === 'interview') {
+        const recordDate = r.createdAt ? new Date(r.createdAt.toDate ? r.createdAt.toDate() : r.createdAt).toISOString().split('T')[0] : '';
+        if (from && recordDate < from) return false;
+        if (to   && recordDate > to)   return false;
+        if (cat && r.positionApplied !== cat) return false;
+        // No status filter for interview application data
+        return true;
+      }
+      
+      // For visitors and workers
+      if (from && r.date < from) return false;
+      if (to   && r.date > to)   return false;
+      if (status && r.status !== status) return false;
+      // Interview view: only show Interview category records
+      if (currentView === 'interview' && r.category !== 'Interview') return false;
+      // Visitors view: exclude Interview records
+      if (currentView === 'visitors' && r.category === 'Interview') return false;
+      if (cat) {
+        if (currentView === 'workers'  && r.designation !== cat) return false;
+        if (currentView !== 'workers'  && cat !== 'Interview' && r.category !== cat) return false;
+      }
+      return true;
+    });
+
+    renderTable(filteredRecords);
+    updateStats(filteredRecords);
+  };
+
+  window.downloadWorkerMonthlyReport = async function() {
+    if (currentView !== 'workers') {
+      showToast('⚠️ Monthly report sirf Karigar view mein hi banega.');
+      return;
+    }
+
+    applyFilter();
+    const records = filteredRecords.slice();
+    if (records.length === 0) {
+      showToast('⚠️ Is range mein koi karigar record nahi mila.');
+      return;
+    }
+
+    showLoader('Monthly report ban rahi hai...');
+
+    try {
+      const from = document.getElementById('from-date').value || 'all';
+      const to   = document.getElementById('to-date').value   || 'all';
+      const filename = `KiaraJewellery_Karigar_MonthlyReport_${from}_to_${to}.xlsx`;
+
+      const workbook  = new ExcelJS.Workbook();
+      workbook.creator = 'Kiara Jewellery';
+      workbook.created = new Date();
+      const sheet = workbook.addWorksheet('Monthly Report');
+
+      sheet.columns = [
+        { header: 'Name',         key: 'name',        width: 22 },
+        { header: 'Photo',        key: 'photo',       width: 12 },
+        { header: 'Worker ID',    key: 'appId',       width: 14 },
+        { header: 'Date',         key: 'date',        width: 14 },
+        { header: 'Contact No.',  key: 'contact',     width: 16 },
+        { header: 'Department',   key: 'department',  width: 18 },
+        { header: 'Work Type',    key: 'designation', width: 18 },
+        { header: 'Contractor',   key: 'contractor',  width: 20 },
+        { header: 'IN',           key: 'inTime',      width: 12 },
+        { header: 'OUT',          key: 'outTime',     width: 12 },
+        { header: 'Total Hours',  key: 's1Hours',     width: 14 },
+      ];
+
+      const headerRow = sheet.getRow(1);
+      headerRow.height = 22;
+      headerRow.eachCell(cell => {
+        cell.fill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF7C5C2E' } };
+        cell.font   = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          bottom: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          left: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          right: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+        };
+      });
+
+      for (let i = 0; i < records.length; i++) {
+        const r = records[i];
+        const totalHours = calcHours(r.inTime, r.outTime);
+        const workerId = r.workerId || r.cwId || r.appId || r.id || '';
+        const rowData = {
+          name:        r.name || '',
+          photo:       '',
+          appId:       workerId,
+          date:        r.date || '',
+          contact:     r.contact ? '+91 ' + r.contact : '',
+          department:  r.department || '',
+          designation: r.designation || '',
+          contractor:  r.contractorName || r.contractor || '',
+          inTime:      r.inTime || '',
+          outTime:     r.outTime || '',
+          s1Hours:     totalHours,
+        };
+        const row = sheet.addRow(rowData);
+        row.height = 75;
+        row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+          cell.alignment = { vertical: 'middle', horizontal: colNum === 2 ? 'center' : 'left', wrapText: true };
+          cell.border = {
+            top:    { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            left:   { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            right:  { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          };
+        });
+
+        const workerPhoto = r.passportPhoto || r.photo || r.photoUrl || '';
+        if (workerPhoto && typeof workerPhoto === 'string' && workerPhoto.startsWith('data:image')) {
+          try {
+            const ext = workerPhoto.includes('data:image/png') ? 'png' : 'jpeg';
+            const base64Data = workerPhoto.split(',')[1];
+            const imageId = workbook.addImage({ base64: base64Data, extension: ext });
+            sheet.addImage(imageId, {
+              tl: { col: 1.1, row: row.number - 1 + 0.1 },
+              br: { col: 1.9, row: row.number - 0.1 },
+              editAs: 'oneCell',
+            });
+          } catch (imgErr) {
+            console.warn('Photo embed failed for monthly report row', row.number, imgErr);
+          }
+        }
+      }
+
+      sheet.views = [{ state: 'frozen', ySplit: 1 }];
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      hideLoader();
+      showToast(`✅ Monthly report download ho gaya! (${records.length} rows)`);
+    } catch (err) {
+      hideLoader();
+      showToast('❌ Monthly report error: ' + err.message);
+      console.error(err);
+    }
+  };
+
+    function collectKarigarGroups() {
+      const groups = {};
+
+      // Attendance records only; contract worker profiles are used only for missing keys.
+      allWorkers.forEach(r => {
+        const key = r.cwId || r.appId || r.id || r.name || 'Unknown';
+        if (!groups[key]) {
+          groups[key] = {
+            records: [],
+            displayName: r.name || r.cwId || r.appId || r.id || key,
+            workerId: r.workerId || r.cwId || r.appId || r.id || key,
+          };
+        }
+        groups[key].records.push(r);
+      });
+
+      allContractWorkers.forEach(r => {
+        const key = r.cwId || r.appId || r.id || r.name || 'Unknown';
+        if (!groups[key]) {
+          groups[key] = {
+            records: [],
+            displayName: r.name || r.cwId || r.appId || r.id || key,
+            workerId: r.cwId || r.appId || r.id || key,
+          };
+        }
+      });
+
+      return groups;
+    }
+
+    // Render all karigar monthly report preview
+    window.renderAllKarigarMonthlyReport = function() {
+      let monthVal = document.getElementById('monthly-month').value;
+      const now = new Date();
+      if (!monthVal) monthVal = now.toISOString().slice(0,7);
+      const [year, month] = monthVal.split('-').map(Number);
+      const lastDay = new Date(year, month, 0).getDate();
+      const tbody = document.getElementById('monthly-report-body');
+      tbody.innerHTML = '';
+
+      const workersByKey = collectKarigarGroups();
+      const keys = Object.keys(workersByKey).sort((a,b) => {
+        const aName = workersByKey[a].displayName.toLowerCase();
+        const bName = workersByKey[b].displayName.toLowerCase();
+        return aName.localeCompare(bName);
+      });
+
+      if (keys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#9ca3af;">No karigar attendance data available</td></tr>';
+        return;
+      }
+
+      keys.forEach((key, index) => {
+        const { records, displayName } = workersByKey[key];
+        const headerHtml = `<tr><td colspan="8" style="background:#f3f4f6;font-weight:700;padding:8px;border-top:1px solid #e8ddd0;">${displayName} — ${monthVal}</td></tr>`;
+        tbody.insertAdjacentHTML('beforeend', headerHtml);
+        const colsHtml = `<tr style="background:#fffbf3;border-bottom:1px solid #e8ddd0;font-weight:600;">
+          <td>Date</td><td>Photo</td><td>Name</td><td>Worker ID</td><td>In-Time</td><td>Out-Time</td><td>Total Hours</td><td>Attendance</td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', colsHtml);
+
+        for (let d = 1; d <= lastDay; d++) {
+          const dt = new Date(year, month-1, d);
+          const dateStr = dt.toISOString().split('T')[0];
+          const rec = records.find(r => r.date === dateStr) || null;
+          const photoCell = rec && (rec.passportPhoto || rec.photo)
+            ? `<img class="photo-thumb" src="${rec.passportPhoto || rec.photo}" alt="photo" />`
+            : `<div class="no-photo">${(displayName||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}</div>`;
+          const inTime = rec ? (rec.inTime || '—') : '—';
+          const outTime = rec ? (rec.outTime || '—') : '—';
+          const hours = rec ? calcHours(inTime, outTime) : '—';
+          const attendance = rec ? 'Present' : 'Absent';
+          const workerId = rec ? (rec.appId || rec.cwId || rec.id || workersByKey[key].workerId) : workersByKey[key].workerId;
+          const rowHtml = `<tr>
+            <td>${dateStr}</td>
+            <td>${photoCell}</td>
+            <td style="font-weight:600;">${displayName}</td>
+            <td>${workerId}</td>
+            <td>${inTime}</td>
+            <td>${outTime}</td>
+            <td>${hours}</td>
+            <td>${attendance}</td>
+          </tr>`;
+          tbody.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        if (index !== keys.length - 1) {
+          tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="8">&nbsp;</td></tr>');
+        }
+      });
+      showToast('✅ Monthly report preview ready');
+    };
+
+    // Download all karigar monthly report as Excel
+    window.downloadAllKarigarMonthlyExcel = async function() {
+      let monthVal = document.getElementById('monthly-month').value;
+      const now = new Date();
+      if (!monthVal) monthVal = now.toISOString().slice(0, 7);
+      const [year, month] = monthVal.split('-').map(Number);
+      if (!year || !month) { showToast('⚠️ Kripya pehle month select karein'); return; }
+      const lastDay = new Date(year, month, 0).getDate();
+      const monthName = new Date(year, month - 1, 1).toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+      showLoader('Report ban raha hai...');
+      try {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Kiara Jewellery';
+        workbook.created = new Date();
+        const sheet = workbook.addWorksheet('Monthly Report');
+
+        // ── Column setup ──────────────────────────────────────
+        sheet.columns = [
+          { key: 'photo',      width: 10 },  // col 1
+          { key: 'workerId',   width: 14 },  // col 2
+          { key: 'date',       width: 13 },  // col 3
+          { key: 'name',       width: 22 },  // col 4
+          { key: 'contact',    width: 16 },  // col 5
+          { key: 'dept',       width: 16 },  // col 6
+          { key: 'desig',      width: 14 },  // col 7
+          { key: 'contractor', width: 18 },  // col 8
+          { key: 'inTime',     width: 11 },  // col 9
+          { key: 'outTime',    width: 11 },  // col 10
+          { key: 'hours',      width: 12 },  // col 11
+          { key: 'attendance', width: 12 },  // col 12
+          { key: 'status',     width: 10 },  // col 13
+        ];
+        const NCOLS = 13;
+        const COL_HEADERS = ['Photo','Worker ID','Date','Name','Contact','Department','Designation','Contractor','Shift IN','Shift OUT','Total Hours','Attendance','Status'];
+
+        const thinB = {
+          top:    { style:'thin', color:{argb:'FFD1B98A'} },
+          bottom: { style:'thin', color:{argb:'FFD1B98A'} },
+          left:   { style:'thin', color:{argb:'FFD1B98A'} },
+          right:  { style:'thin', color:{argb:'FFD1B98A'} },
+        };
+        const medB = {
+          top:    { style:'medium', color:{argb:'FF7C5C2E'} },
+          bottom: { style:'medium', color:{argb:'FF7C5C2E'} },
+          left:   { style:'medium', color:{argb:'FF7C5C2E'} },
+          right:  { style:'medium', color:{argb:'FF7C5C2E'} },
+        };
+
+        function styleRow(row, height, bgArgb, boldFlag) {
+          row.height = height;
+          row.eachCell({ includeEmpty: true }, (cell, ci) => {
+            cell.border    = thinB;
+            cell.alignment = { vertical:'middle', horizontal: ci===1 ? 'center' : 'left', wrapText:true };
+            cell.font      = { name:'Calibri', size:10, bold:!!boldFlag };
+            if (bgArgb) cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:bgArgb } };
+          });
+        }
+
+        // ── Step 1: Build karigar map from allWorkers ──────────
+        // Key = cwId if present, else name (normalized)
+        const karigarMap = {};
+
+        allWorkers.forEach(r => {
+          // unique key: prefer cwId, fallback to normalized name
+          const key = (r.workerId && r.workerId.trim()) ? r.workerId.trim() : (r.cwId && r.cwId.trim()) ? r.cwId.trim() : (r.name || '').trim().toLowerCase();
+          if (!key) return;
+          if (!karigarMap[key]) {
+            karigarMap[key] = {
+              displayName:  r.name || key,
+              workerId:     r.cwId || r.appId || r.id || key,
+              contact:      r.contact || '',
+              dept:         r.department || '',
+              desig:        r.designation || '',
+              contractor:   r.contractorName || r.contractor || '',
+              records:      {},   // date → record
+            };
+          }
+          if (r.date) karigarMap[key].records[r.date] = r;
+        });
+
+        // Also add karigars from allContractWorkers who have no attendance yet
+        allContractWorkers.forEach(r => {
+          const key = (r.cwId && r.cwId.trim()) ? r.cwId.trim() : (r.name || '').trim().toLowerCase();
+          if (!key) return;
+          if (!karigarMap[key]) {
+            karigarMap[key] = {
+              displayName:  r.name || key,
+              workerId:     r.cwId || r.id || key,
+              contact:      r.contact || '',
+              dept:         r.department || '',
+              desig:        r.designation || '',
+              contractor:   r.contractorName || '',
+              records:      {},
+            };
+          }
+        });
+
+        const keys = Object.keys(karigarMap).sort((a, b) =>
+          karigarMap[a].displayName.toLowerCase().localeCompare(karigarMap[b].displayName.toLowerCase())
+        );
+
+        if (keys.length === 0) {
+          hideLoader();
+          showToast('⚠️ Koi karigar data nahi mila');
+          return;
+        }
+
+        // ── Step 2: Main title ─────────────────────────────────
+        const titleRow = sheet.addRow(['KIARA JEWELLERY PVT. LTD. — Karigar Monthly Attendance Report — ' + monthName]);
+        titleRow.height = 28;
+        const tc = titleRow.getCell(1);
+        tc.font      = { name:'Calibri', bold:true, size:13, color:{argb:'FFFFFFFF'} };
+        tc.fill      = { type:'pattern', pattern:'solid', fgColor:{argb:'FF7C5C2E'} };
+        tc.alignment = { vertical:'middle', horizontal:'center' };
+        tc.border    = medB;
+        sheet.mergeCells(titleRow.number, 1, titleRow.number, NCOLS);
+
+        // ── Step 3: Loop each karigar ──────────────────────────
+        for (let ki = 0; ki < keys.length; ki++) {
+          const key = keys[ki];
+          const kg  = karigarMap[key];
+
+          // --- Karigar section header (gold) ---
+          const secText =
+            `👷  ${kg.displayName.toUpperCase()}` +
+            (kg.desig       ? `   |   ${kg.desig}`                 : '') +
+            (kg.dept        ? ` — ${kg.dept}`                      : '') +
+            (kg.contractor  ? `   |   Contractor: ${kg.contractor}` : '') +
+            `   |   ID: ${kg.workerId}` +
+            (kg.contact     ? `   |   +91 ${kg.contact}`           : '');
+
+          const secRow = sheet.addRow([secText]);
+          secRow.height = 22;
+          const sc = secRow.getCell(1);
+          sc.font      = { name:'Calibri', bold:true, size:11, color:{argb:'FFFFFFFF'} };
+          sc.fill      = { type:'pattern', pattern:'solid', fgColor:{argb:'FFC9973A'} };
+          sc.alignment = { vertical:'middle', horizontal:'left', indent:1 };
+          sc.border    = medB;
+          sheet.mergeCells(secRow.number, 1, secRow.number, NCOLS);
+
+          // --- Column header row ---
+          const hRow = sheet.addRow(COL_HEADERS);
+          hRow.height = 18;
+          hRow.eachCell({ includeEmpty:true }, (cell, ci) => {
+            cell.value     = COL_HEADERS[ci-1];
+            cell.font      = { name:'Calibri', bold:true, size:10, color:{argb:'FF7C5C2E'} };
+            cell.fill      = { type:'pattern', pattern:'solid', fgColor:{argb:'FFFFF8EE'} };
+            cell.alignment = { vertical:'middle', horizontal:'center', wrapText:true };
+            cell.border    = thinB;
+          });
+
+          // --- Daily rows (1 to lastDay) ---
+          let presentCount = 0;
+          let absentCount  = 0;
+
+          for (let d = 1; d <= lastDay; d++) {
+            const dt      = new Date(year, month - 1, d);
+            const dateStr = dt.toISOString().split('T')[0];
+            const isSun   = dt.getDay() === 0;
+
+            const rec       = kg.records[dateStr] || null;
+            const isPresent = !!rec;
+            if (isPresent) presentCount++; else absentCount++;
+
+            const inTime     = rec ? (rec.inTime  || '') : '';
+            const outTime    = rec ? (rec.outTime || '') : '';
+            const totalHours = rec ? calcHours(inTime, outTime) : '';
+            const attendance = isSun ? 'Sunday' : (isPresent ? 'Present' : 'Absent');
+            const statusVal  = rec ? (rec.status === 'exited' ? 'Exited' : 'Inside') : '';
+            const photoSrc   = rec ? (rec.passportPhoto || rec.photo || '') : '';
+
+            const dRow = sheet.addRow([
+              '',                   // col 1 photo placeholder
+              kg.workerId,          // col 2
+              dateStr,              // col 3
+              kg.displayName,       // col 4
+              kg.contact ? '+91 ' + kg.contact : '',  // col 5
+              kg.dept,              // col 6
+              kg.desig,             // col 7
+              kg.contractor,        // col 8
+              inTime,               // col 9
+              outTime,              // col 10
+              totalHours,           // col 11
+              attendance,           // col 12
+              statusVal,            // col 13
+            ]);
+            dRow.height = 52;
+
+            // Row background
+            let bg;
+            if      (isSun)      bg = 'FFFFF3CD';   // yellow — Sunday
+            else if (!isPresent) bg = 'FFFDE8E8';   // red tint — Absent
+            else                 bg = d % 2 === 0 ? 'FFFAF8F5' : 'FFFFFFFF';
+
+            styleRow(dRow, 52, bg, false);
+
+            // Attendance cell color
+            const attCell = dRow.getCell(12);
+            if (isSun)        attCell.font = { name:'Calibri', bold:true, size:10, color:{argb:'FFD97706'} };
+            else if (isPresent) attCell.font = { name:'Calibri', bold:true, size:10, color:{argb:'FF16A34A'} };
+            else              attCell.font = { name:'Calibri', bold:true, size:10, color:{argb:'FFDC2626'} };
+
+            // Embed photo col 1
+            if (photoSrc && photoSrc.startsWith('data:image')) {
+              try {
+                const ext   = photoSrc.includes('data:image/png') ? 'png' : 'jpeg';
+                const b64   = photoSrc.split(',')[1];
+                const imgId = workbook.addImage({ base64:b64, extension:ext });
+                const ri    = dRow.number - 1; // 0-based
+                sheet.addImage(imgId, {
+                  tl: { col:0.08, row:ri + 0.08 },
+                  br: { col:0.92, row:ri + 0.92 },
+                  editAs:'oneCell',
+                });
+              } catch(e) { console.warn('photo embed fail', e); }
+            }
+          } // end days loop
+
+          // --- Summary row ---
+          const pct    = lastDay > 0 ? ((presentCount / lastDay) * 100).toFixed(1) : '0.0';
+          const sumRow = sheet.addRow([
+            '', '', '', `✅ Summary — ${kg.displayName}`,
+            '', '', '', '',
+            `Total: ${lastDay}`,
+            `Present: ${presentCount}`,
+            `Absent: ${absentCount}`,
+            `${pct}%`,
+            '',
+          ]);
+          sumRow.height = 18;
+          styleRow(sumRow, 18, 'FFFFF0D9', true);
+          const sumLabelCell = sumRow.getCell(4);
+          sumLabelCell.font = { name:'Calibri', bold:true, size:10, color:{argb:'FF7C5C2E'} };
+          sheet.mergeCells(sumRow.number, 1, sumRow.number, 3);
+          sheet.mergeCells(sumRow.number, 5, sumRow.number, 8);
+
+          // --- 2 blank separator rows ---
+          if (ki < keys.length - 1) {
+            [1, 2].forEach(() => {
+              const br = sheet.addRow([]);
+              br.height = 8;
+              for (let c = 1; c <= NCOLS; c++) {
+                br.getCell(c).fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFFAF8F5'} };
+              }
+            });
+          }
+        } // end karigar loop
+
+        // ── Download ───────────────────────────────────────────
+        const filename = `Karigar_Monthly_${monthVal}.xlsx`;
+        const buffer   = await workbook.xlsx.writeBuffer();
+        const blob     = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url      = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        hideLoader();
+        showToast(`✅ Report ready! ${keys.length} karigar — ${monthName}`);
+
+      } catch(err) {
+        hideLoader();
+        showToast('❌ Error: ' + err.message);
+        console.error(err);
+      }
+    };
+
+    function updateStats(records) {
+    document.getElementById('stat-total').textContent  = records.length;
+    if (currentView === 'interview') {
+      document.getElementById('stat-inside').textContent = '—';
+      document.getElementById('stat-exited').textContent = '—';
+    } else {
+      document.getElementById('stat-inside').textContent = records.filter(r => r.status === 'inside').length;
+      document.getElementById('stat-exited').textContent = records.filter(r => r.status === 'exited').length;
+    }
+  }
+
+  function calcHours(inTime, outTime) {
+    if (!inTime || !outTime) return '—';
+    try {
+      const [inH, inM]   = inTime.split(':').map(Number);
+      const [outH, outM] = outTime.split(':').map(Number);
+      let mins = (outH * 60 + outM) - (inH * 60 + inM);
+      if (mins < 0) mins += 24 * 60;
+      let hours = Math.floor(mins / 60);
+      const remainder = mins % 60;
+      let roundedMinutes;
+      if (remainder < 15) {
+        roundedMinutes = 0;
+      } else if (remainder < 45) {
+        roundedMinutes = 30;
+      } else {
+        roundedMinutes = 0;
+        hours += 1;
+      }
+      return hours + 'h' + (roundedMinutes ? ' ' + roundedMinutes + 'm' : '');
+    } catch { return '—'; }
+  }
+
+  function renderTable(records) {
+    const tbody   = document.getElementById('table-body');
+    const empty   = document.getElementById('empty-state');
+    const countEl = document.getElementById('table-count');
+    const thead   = document.getElementById('table-head');
+    countEl.textContent = records.length + ' records';
+
+    // Update table headers based on view
+    if (currentView === 'interview') {
+  thead.innerHTML = `<tr>
+    <th></th><th>App ID</th><th>Date</th><th>Full Name</th>
+    <th>Contact</th><th>Email</th><th>Position Applied</th>
+    <th>Present CTC</th><th>Expected CTC</th><th>Download</th>
+  </tr>`;
+    } else if (currentView === 'visitors') {
+      thead.innerHTML = `<tr>
+        <th>Photo</th><th>App ID</th><th>Date</th><th>Name</th>
+        <th>Contact</th><th>Aadhaar/PAN</th><th>Category</th>
+        <th>Whom to Meet</th><th>Purpose</th><th>In-Time</th><th>Out-Time</th><th>Status</th>
+      </tr>`;
+    } else {
+      thead.innerHTML = `<tr>
+        <th>Photo</th><th>Worker ID</th><th>Date</th><th>Name</th>
+        <th>Contact</th><th>Department</th><th>Designation</th>
+        <th>Contractor</th>
+        <th>Shift 1 IN</th><th>Shift 1 OUT</th><th>Totals Hours</th>
+        <th>Attendance</th><th>Status</th>
+      </tr>`;
+    }
+    if (records.length === 0) {
+      tbody.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    tbody.innerHTML = records.map(r => {
+      const photoCell = (r.passportPhoto || r.photo)
+        ? `<img class="photo-thumb" src="${r.passportPhoto || r.photo}" alt="photo" />`
+        : `<div class="no-photo">${(r.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}</div>`;
+      const statusBadge = r.status === 'exited'
+        ? `<span class="badge badge-exited">Exited</span>`
+        : `<span class="badge badge-inside">Inside</span>`
+
+      if (currentView === 'interview') {
+        const recordDate = r.createdAt ? new Date(r.createdAt.toDate ? r.createdAt.toDate() : r.createdAt).toLocaleDateString('en-IN') : '—';
+        const fullName = [r.title, r.firstname, r.middleName, r.surname].filter(Boolean).join(' ') || r.name || '—';
+        const rowId = 'detail-' + (r.id || r.appId || Math.random().toString(36).slice(2));
+
+        // Build qualifications HTML
+        let qualHtml = '—';
+        if (r.qualifications && r.qualifications.length > 0) {
+          qualHtml = `<table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <tr style="background:#fdf3e3;">
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Year</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Degree/Diploma</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">School/College</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Board/University</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Marks%</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Class</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Achievement</th>
+            </tr>
+            ${r.qualifications.map(q => `<tr>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.year||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.degree||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.college||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.board||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.marks||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.cls||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${q.achievement||'—'}</td>
+            </tr>`).join('')}
+          </table>`;
+        }
+
+
+        
+        // Build work experience HTML
+        let expHtml = '—';
+        if (r.workExperience && r.workExperience.length > 0) {
+          expHtml = r.workExperience.map((e, i) => `
+            <div style="background:#faf8f5;border:1px solid #e8ddd0;border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+              <div style="font-size:11px;font-weight:700;color:#c9973a;margin-bottom:6px;">EXPERIENCE #${i+1}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;">
+                <div><span style="color:#9ca3af;">Employer:</span> <b>${e.employer||'—'}</b></div>
+                <div><span style="color:#9ca3af;">Position:</span> <b>${e.position||'—'}</b></div>
+                <div><span style="color:#9ca3af;">Salary:</span> ${e.salary ? '₹'+e.salary : '—'}</div>
+                <div><span style="color:#9ca3af;">Period:</span> ${e.from||'—'} → ${e.to||'—'}</div>
+                <div style="grid-column:1/-1;"><span style="color:#9ca3af;">Job Profile:</span> ${e.profile||'—'}</div>
+                <div style="grid-column:1/-1;"><span style="color:#9ca3af;">Reason for Leaving:</span> ${e.reason||'—'}</div>
+              </div>
+            </div>`).join('');
+        }
+
+        // Build languages HTML
+        let langHtml = '—';
+        if (r.languages && r.languages.length > 0) {
+          langHtml = `<table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <tr style="background:#fdf3e3;">
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:left;">Language</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:center;">Read</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:center;">Write</th>
+              <th style="padding:5px 8px;border:1px solid #e8ddd0;text-align:center;">Speak</th>
+            </tr>
+            ${r.languages.map(l => `<tr>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;">${l.language||'—'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;text-align:center;">${l.read ? '✅' : '❌'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;text-align:center;">${l.write ? '✅' : '❌'}</td>
+              <td style="padding:4px 8px;border:1px solid #e8ddd0;text-align:center;">${l.speak ? '✅' : '❌'}</td>
+            </tr>`).join('')}
+          </table>`;
+        }
+
+        const prevApplied = r.prevApplied === 'Yes'
+          ? `Yes — <span style="color:#9ca3af">${r.prevDetails||''}</span>`
+          : (r.prevApplied || '—');
+        const removedFromJob = r.removedFromJob === 'Yes'
+          ? `Yes — ${r.removedCompany||''} (${r.removedReason||''})`
+          : (r.removedFromJob || '—');
+
+        return `
+        <tr style="cursor:pointer;background:#fffbf3;" onclick="toggleDetail('${rowId}')">
+          <td style="text-align:center;font-size:16px;" id="toggle-${rowId}">▶</td>
+          <td style="font-weight:600;color:#c9973a;">${r.appId || '—'}</td>
+          <td>${recordDate}</td>
+          <td style="font-weight:600;">${fullName}</td>
+          <td>${r.contact ? '+91 ' + r.contact : '—'}</td>
+          <td>${r.email || '—'}</td>
+          <td><span class="cat-pill">${r.positionApplied || '—'}</span></td>
+          <td>${r.presentCTC ? '₹ ' + r.presentCTC : '—'}</td>
+          <td>${r.expectedCTC ? '₹ ' + r.expectedCTC : '—'}</td>
+          <td>
+          <button class="action-btn pdf" onclick="event.stopPropagation(); downloadPDF('${r.appId}')">📄 PDF</button>
+          </td>
+        </tr>
+        <tr id="${rowId}" class="hidden">
+          <td colspan="10" style="padding:0;border-bottom:2px solid #c9973a;">
+            <div style="padding:20px 24px;background:#fffdf9;">
+
+              <!-- BASIC INFO -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">📋 Basic Info</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px;">
+                  <div><span style="color:#9ca3af;font-size:11px;">App ID</span><br><b>${r.appId||'—'}</b></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Parent Visitor ID</span><br>${r.parentAppId||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Date Submitted</span><br>${recordDate}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Position Applied</span><br><b style="color:#c9973a">${r.positionApplied||'—'}</b></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Reference</span><br>${r.reference||'—'}</div>
+                </div>
+              </div>
+
+              <!-- PERSONAL DETAILS -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">👤 Personal Details</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px;">
+                  <div><span style="color:#9ca3af;font-size:11px;">Full Name</span><br><b>${fullName}</b></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Date of Birth</span><br>${r.dob||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Age</span><br>${r.age ? r.age + ' years' : '—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Marital Status</span><br>${r.maritalStatus||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Blood Group</span><br>${r.bloodGroup||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">PAN Number</span><br><span style="font-family:monospace;">${r.panNumber||'—'}</span></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Email</span><br>${r.email||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Contact (Primary)</span><br>${r.contact ? '+91 ' + r.contact : '—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Mobile (Alternate)</span><br>${r.mobileAlt||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Father's Name</span><br>${r.fatherName||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Father's Occupation</span><br>${r.fatherOccupation||'—'}</div>
+                  <div></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Mother's Name</span><br>${r.motherName||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Mother's Occupation</span><br>${r.motherOccupation||'—'}</div>
+                </div>
+              </div>
+
+              <!-- ADDRESSES -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">🏠 Addresses</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
+                  <div><span style="color:#9ca3af;font-size:11px;">Residential Address</span><br>${r.residentialAddress||'—'}<br><span style="color:#9ca3af;font-size:11px;">Tel: ${r.resTel||'—'} &nbsp;|&nbsp; C/O: ${r.resTelCo||'—'}</span></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Permanent Address</span><br>${r.permanentAddress||'—'}<br><span style="color:#9ca3af;font-size:11px;">Tel: ${r.permTel||'—'} &nbsp;|&nbsp; C/O: ${r.permTelCo||'—'}</span></div>
+                </div>
+              </div>
+
+              <!-- COMPANY RELATIONS & SALARY -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">🏢 Company Relations & Salary</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:13px;">
+                  <div><span style="color:#9ca3af;font-size:11px;">Relative in Company</span><br>${r.relName||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Relation</span><br>${r.relRelation||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Relative Contact</span><br>${r.relContact||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Previously Applied?</span><br>${prevApplied}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Present CTC</span><br><b>${r.presentCTC ? '₹ ' + r.presentCTC : '—'}</b></div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Expected CTC</span><br><b style="color:#c9973a">${r.expectedCTC ? '₹ ' + r.expectedCTC : '—'}</b></div>
+                </div>
+              </div>
+
+              <!-- QUALIFICATIONS -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">🎓 Academic Qualifications</div>
+                ${qualHtml}
+              </div>
+
+              <!-- WORK EXPERIENCE -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">💼 Work Experience</div>
+                ${expHtml}
+                <div style="font-size:13px;margin-top:8px;">
+                  <span style="color:#9ca3af;font-size:11px;">Ever Removed from Job?</span> ${removedFromJob}
+                </div>
+              </div>
+
+              <!-- LANGUAGES -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">🌐 Languages Known</div>
+                ${langHtml}
+              </div>
+
+              <!-- HEALTH & REFERENCES -->
+              <div style="margin-bottom:20px;">
+                <div style="font-size:11px;font-weight:700;color:#c9973a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e8ddd0;">🏥 Health & References</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;font-size:13px;">
+                  <div style="grid-column:1/-1;"><span style="color:#9ca3af;font-size:11px;">Health / Physical Details</span><br>${r.healthDetails||'—'}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Reference 1 (Superior)</span><br>${r.ref1Name||'—'} ${r.ref1Tel ? ' — '+r.ref1Tel : ''}</div>
+                  <div><span style="color:#9ca3af;font-size:11px;">Reference 2 (Social)</span><br>${r.ref2Name||'—'} ${r.ref2Tel ? ' — '+r.ref2Tel : ''}</div>
+                </div>
+              </div>
+
+              <!-- DECLARATION -->
+              <div style="background:#fdf3e3;border:1px solid #f0dbb8;border-radius:8px;padding:12px 16px;font-size:12px;color:#7c5c2e;">
+                <b>Declaration</b> — Date: ${r.declarationDate||'—'} &nbsp;|&nbsp; Place: ${r.declarationPlace||'—'}
+              </div>
+
+            </div>
+          </td>
+        </tr>`;
+      } else if (currentView === 'visitors') {
+        return `<tr>
+          <td>${photoCell}</td>
+          <td style="font-weight:600;color:#c9973a;">${r.appId || '—'}</td>
+          <td>${r.date || '—'}</td>
+          <td style="font-weight:600;">${r.name || '—'}</td>
+          <td>${r.contact ? '+91 ' + r.contact : '—'}</td>
+          <td style="font-family:monospace;">${r.idNumber || '—'}</td>
+          <td><span class="cat-pill">${r.category || '—'}</span></td>
+          <td>${r.whom || '—'}</td>
+          <td style="color:#9ca3af;">${r.purpose || '—'}</td>
+          <td>${r.inTime || '—'}</td>
+          <td>${r.outTime || '—'}</td>
+          <td>${statusBadge}</td>
+        </tr>`;
+      } else {
+        const s1Hours = calcHours(r.inTime, r.outTime);
+        const attendLabel = r.attendance === 'late' ? '<span class="badge" style="background:#fef3c7;color:#d97706;">Late</span>'
+          : r.attendance === 'half_day' ? '<span class="badge" style="background:#fef3c7;color:#d97706;">Half Day</span>'
+          : '<span class="badge" style="background:#dcfce7;color:#15803d;">Full Day</span>';
+        const workerId = r.workerId || r.cwId || r.appId || r.id || '—';
+        return `<tr>
+          <td>${photoCell}</td>
+          <td style="font-weight:600;color:#c9973a;">${workerId}</td>
+          <td>${r.date || '—'}</td>
+          <td style="font-weight:600;">${r.name || '—'}</td>
+          <td>${r.contact ? '+91 ' + r.contact : '—'}</td>
+          <td>${r.department || '—'}</td>
+          <td><span class="cat-pill">${r.designation || '—'}</span></td>
+          <td>${r.contractorName || r.contractor || '—'}</td>
+          <td>${r.inTime || '—'}</td>
+          <td>${r.outTime || '—'}</td>
+          <td style="font-weight:600;color:#16a34a;">${s1Hours}</td>
+          <td>${attendLabel}</td>
+          <td>${statusBadge}</td>
+        </tr>`;
+      }
+    }).join('');
+  }
+
+window.downloadPDF = async function(singleAppId = null) {
+  let records = singleAppId ? filteredRecords.filter(r => r.appId === singleAppId) : filteredRecords;
+  
+  if (records.length === 0) {
+    showToast('⚠️ Koi data nahi hai download karne ke liye!');
+    return;
+  }
+
+  if (currentView !== 'interview' && !singleAppId) {
+    showToast('⚠️ PDF download sirf interview data ke liye available hai!');
+    return;
+  }
+
+  showLoader(singleAppId ? 'Individual PDF ban rahi hai...' : 'Bulk PDF ban rahi hai...');
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const from = document.getElementById('from-date').value || 'all';
+    const to   = document.getElementById('to-date').value   || 'all';
+    const filename = singleAppId 
+      ? `KiaraJewellery_Interview_${singleAppId}.pdf`
+      : `KiaraJewellery_Interview_${from}_to_${to}.pdf`;
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const leftMargin = 15;
+    const rightMargin = 15;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+
+    for (let recordIdx = 0; recordIdx < records.length; recordIdx++) {
+      const r = records[recordIdx];
+      
+      if (recordIdx > 0) {
+        pdf.addPage();
+      }
+
+      let yPos = 15;
+
+      // ===== HEADER =====
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(18);
+      pdf.setTextColor(124, 92, 46);
+      pdf.text('KIARA JEWELLERY', pageWidth / 2, yPos, { align: 'center' });
+      
+      yPos += 7;
+      pdf.setFontSize(13);
+      pdf.setTextColor(124, 92, 46);
+      pdf.text('Interview Application Form', pageWidth / 2, yPos, { align: 'center' });
+      
+      yPos += 10;
+      pdf.setDrawColor(124, 92, 46);
+      pdf.setLineWidth(0.8);
+      pdf.line(leftMargin, yPos, pageWidth - rightMargin, yPos);
+      yPos += 6;
+
+      // Helper function to add section header
+      const addSectionHeader = (text, icon) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(124, 92, 46);
+        pdf.text(`${text}`, leftMargin, yPos);
+        yPos += 6;
+        pdf.setDrawColor(201, 151, 58);
+        pdf.setLineWidth(0.3);
+        pdf.line(leftMargin, yPos, pageWidth - rightMargin, yPos);
+        yPos += 4;
+      };
+
+      // Helper function to add label-value pairs
+      const addField = (label, value, col = 1) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(92, 64, 32);
+        const labelX = leftMargin + (col - 1) * (contentWidth / 2 + 2);
+        pdf.text(label, labelX, yPos);
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(0, 0, 0);
+        const valText = String(value || '—').substring(0, 35);
+        pdf.text(valText, labelX + 50, yPos);
+      };
+
+      // Helper function for full-width field
+      const addFullField = (label, value) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(92, 64, 32);
+        pdf.text(label, leftMargin, yPos);
+        
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(0, 0, 0);
+        
+        const maxWidth = contentWidth - 50;
+        const valText = String(value || '—');
+        const splitText = pdf.splitTextToSize(valText, maxWidth);
+        pdf.text(splitText, leftMargin + 50, yPos);
+        yPos += (splitText.length * 4) + 1;
+      };
+
+      const pageHeight_limit = 270;
+
+      // ===== BASIC INFORMATION =====
+      addSectionHeader('BASIC INFORMATION');
+      const recordDate = r.createdAt ? new Date(r.createdAt.toDate ? r.createdAt.toDate() : r.createdAt).toLocaleDateString('en-IN') : '—';
+      
+      addFullField('App ID:', r.appId || '—');
+      yPos += 2;
+      addFullField('Parent Visitor ID:', r.parentAppId || '—');
+      yPos += 2;
+      addFullField('Date Submitted:', recordDate);
+      yPos += 2;
+      addFullField('Position Applied:', r.positionApplied || '—');
+      yPos += 2;
+      addFullField('Reference:', r.reference || '—');
+      yPos += 5;
+
+      if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+
+      // ===== PERSONAL DETAILS =====
+      addSectionHeader('PERSONAL DETAILS');
+      const fullName = [r.title, r.firstname, r.middleName, r.surname].filter(Boolean).join(' ') || '—';
+      
+      addFullField('Full Name:', fullName);
+      yPos += 2;
+      addField('Date of Birth:', r.dob || '—', 1);
+      yPos += 4;
+      addField('Age:', r.age ? r.age + ' years' : '—', 1);
+      yPos += 4;
+      addField('Marital Status:', r.maritalStatus || '—', 1);
+      yPos += 4;
+      addField('Blood Group:', r.bloodGroup || '—', 1);
+      yPos += 4;
+      addField('PAN Number:', r.panNumber || '—', 1);
+      yPos += 4;
+      addFullField('Email:', r.email || '—');
+      yPos += 2;
+      addFullField('Contact (Primary):', r.contact ? '+91 ' + r.contact : '—');
+      yPos += 2;
+      addFullField('Mobile (Alternate):', r.mobileAlt || '—');
+      yPos += 2;
+      addField('Father Name:', r.fatherName || '—', 1);
+      yPos += 4;
+      addField('Mother Name:', r.motherName || '—', 1);
+      yPos += 4;
+      addField('Father Occupation:', r.fatherOccupation || '—', 1);
+      yPos += 4;
+      addField('Mother Occupation:', r.motherOccupation || '—', 1);
+      yPos += 5;
+
+      if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+
+      // ===== ADDRESSES =====
+      addSectionHeader('ADDRESSES');
+      addFullField('Residential Address:', r.residentialAddress || '—');
+      yPos += 2;
+      addFullField('Permanent Address:', r.permanentAddress || '—');
+      yPos += 5;
+
+      if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+
+      // ===== COMPANY RELATIONS & SALARY =====
+      addSectionHeader('COMPANY RELATIONS & SALARY');
+      addFullField('Previously Applied?:', r.prevApplied || '—');
+      yPos += 2;
+      addFullField('Present CTC:', r.presentCTC ? 'Rs. ' + r.presentCTC : '—');
+      yPos += 2;
+      addFullField('Expected CTC:', r.expectedCTC ? 'Rs. ' + r.expectedCTC : '—');
+      yPos += 2;
+      addFullField('Ever Removed from Job?:', r.removedFromJob || '—');
+      yPos += 5;
+
+      if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+
+      // ===== ACADEMIC QUALIFICATIONS =====
+      if (r.qualifications && r.qualifications.length > 0) {
+        addSectionHeader('ACADEMIC QUALIFICATIONS');
+        
+        r.qualifications.forEach((q, idx) => {
+          if (yPos > pageHeight_limit - 20) { pdf.addPage(); yPos = 15; }
+          
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9);
+          pdf.setTextColor(124, 92, 46);
+          pdf.text(`Qualification ${idx + 1}`, leftMargin, yPos);
+          yPos += 4;
+          
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.setTextColor(0, 0, 0);
+          
+          const qualDetails = [
+            `Year: ${q.year || '—'}`,
+            `Degree: ${q.degree || '—'}`,
+            `School/College: ${q.college || '—'}`,
+            `Board/University: ${q.board || '—'}`,
+            `Marks: ${q.marks || '—'}%`,
+            `Class: ${q.cls || '—'}`,
+          ];
+          
+          qualDetails.forEach(detail => {
+            pdf.text(detail, leftMargin + 5, yPos);
+            yPos += 3;
+          });
+          yPos += 2;
+        });
+        
+        yPos += 3;
+        if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+      }
+
+      // ===== WORK EXPERIENCE =====
+      if (r.workExperience && r.workExperience.length > 0) {
+        addSectionHeader('WORK EXPERIENCE');
+        
+        r.workExperience.forEach((exp, idx) => {
+          if (yPos > pageHeight_limit - 25) { pdf.addPage(); yPos = 15; }
+          
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9);
+          pdf.setTextColor(124, 92, 46);
+          pdf.text(`Experience ${idx + 1}`, leftMargin, yPos);
+          yPos += 4;
+          
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.setTextColor(0, 0, 0);
+          
+          const expDetails = [
+            `Employer: ${exp.employer || '—'}`,
+            `Position: ${exp.position || '—'}`,
+            `Salary: ${exp.salary ? 'Rs. ' + exp.salary : '—'}`,
+            `Period: ${exp.from || '—'} to ${exp.to || '—'}`,
+            `Job Profile: ${exp.profile || '—'}`,
+            `Reason for Leaving: ${exp.reason || '—'}`,
+          ];
+          
+          expDetails.forEach(detail => {
+            pdf.text(detail, leftMargin + 5, yPos);
+            yPos += 3;
+          });
+          yPos += 2;
+        });
+        
+        yPos += 3;
+        if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+      }
+
+      // ===== LANGUAGES =====
+      if (r.languages && r.languages.length > 0) {
+        addSectionHeader('LANGUAGES KNOWN');
+        
+        r.languages.forEach(lang => {
+          if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+          
+          const readStatus = lang.read ? 'Yes' : 'No';
+          const writeStatus = lang.write ? 'Yes' : 'No';
+          const speakStatus = lang.speak ? 'Yes' : 'No';
+          
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9);
+          pdf.setTextColor(0, 0, 0);
+          pdf.text(`${lang.language || '—'}`, leftMargin + 5, yPos);
+          
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(8);
+          pdf.text(`Read: ${readStatus}  Write: ${writeStatus}  Speak: ${speakStatus}`, leftMargin + 50, yPos);
+          yPos += 4;
+        });
+        
+        yPos += 2;
+        if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+      }
+
+      // ===== REFERENCES =====
+      addSectionHeader('REFERENCES');
+      addFullField('Reference 1 (Superior):', (r.ref1Name || '—') + (r.ref1Tel ? ' - ' + r.ref1Tel : ''));
+      yPos += 2;
+      addFullField('Reference 2 (Social):', (r.ref2Name || '—') + (r.ref2Tel ? ' - ' + r.ref2Tel : ''));
+      yPos += 5;
+
+      if (yPos > pageHeight_limit) { pdf.addPage(); yPos = 15; }
+
+      // ===== FOOTER =====
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      const generatedDate = new Date().toLocaleDateString('en-IN');
+      const generatedTime = new Date().toLocaleTimeString('en-IN');
+      pdf.text(`Generated: ${generatedDate} ${generatedTime}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    }
+
+    pdf.save(filename);
+    
+    hideLoader();
+    const count = records.length;
+    showToast(`✅ ${count} interview record${count > 1 ? 's' : ''} download ho gaya!`);
+  } catch (err) {
+    hideLoader();
+    showToast('❌ PDF error: ' + err.message);
+    console.error(err);
+  }
+};
+
+  
+  window.downloadExcel = async function() {
+    if (filteredRecords.length === 0) {
+      showToast('⚠️ Koi data nahi hai download karne ke liye!');
+      return;
+    }
+
+    showLoader('Excel file ban rahi hai...');
+
+    try {
+      const isWorker = currentView === 'workers';
+      const isInterview = currentView === 'interview';
+      const from = document.getElementById('from-date').value || 'all';
+      const to   = document.getElementById('to-date').value   || 'all';
+      const filename = `KiaraJewellery_${isInterview ? 'Interview' : (isWorker ? 'Karigar' : 'Visitors')}_${from}_to_${to}.xlsx`;
+
+      const workbook  = new ExcelJS.Workbook();
+      workbook.creator = 'Kiara Jewellery';
+      workbook.created = new Date();
+      const sheet = workbook.addWorksheet(isInterview ? 'Interview' : (isWorker ? 'Karigar' : 'Visitors'));
+
+      // Column definitions
+      if (isInterview) {
+        sheet.columns = [
+          { header: 'App ID',          key: 'appId',          width: 14 },
+          { header: 'Parent ID',        key: 'parentAppId',    width: 14 },
+          { header: 'Date',             key: 'recordDate',     width: 14 },
+          { header: 'Title',            key: 'title',          width: 8  },
+          { header: 'First Name',       key: 'firstname',      width: 16 },
+          { header: 'Middle Name',      key: 'middleName',     width: 16 },
+          { header: 'Surname',          key: 'surname',        width: 16 },
+          { header: 'Contact',          key: 'contact',        width: 16 },
+          { header: 'Alt Mobile',       key: 'mobileAlt',      width: 14 },
+          { header: 'Email',            key: 'email',          width: 25 },
+          { header: 'Position Applied', key: 'positionApplied',width: 20 },
+          { header: 'DOB',              key: 'dob',            width: 13 },
+          { header: 'Age',              key: 'age',            width: 8  },
+          { header: 'Marital Status',   key: 'maritalStatus',  width: 14 },
+          { header: 'Blood Group',      key: 'bloodGroup',     width: 12 },
+          { header: 'PAN',              key: 'panNumber',      width: 14 },
+          { header: 'Father Name',      key: 'fatherName',     width: 20 },
+          { header: 'Father Occ.',      key: 'fatherOccupation',width: 16},
+          { header: 'Mother Name',      key: 'motherName',     width: 20 },
+          { header: 'Mother Occ.',      key: 'motherOccupation',width: 16},
+          { header: 'Residential Addr', key: 'residentialAddress', width: 30 },
+          { header: 'Permanent Addr',   key: 'permanentAddress',   width: 30 },
+          { header: 'Relative Name',    key: 'relName',        width: 18 },
+          { header: 'Relation',         key: 'relRelation',    width: 14 },
+          { header: 'Relative Contact', key: 'relContact',     width: 16 },
+          { header: 'Prev Applied?',    key: 'prevApplied',    width: 14 },
+          { header: 'Prev Details',     key: 'prevDetails',    width: 22 },
+          { header: 'Present CTC',      key: 'presentCTC',     width: 14 },
+          { header: 'Expected CTC',     key: 'expectedCTC',    width: 14 },
+          { header: 'Removed from Job?',key: 'removedFromJob', width: 16 },
+          { header: 'Removed Company',  key: 'removedCompany', width: 20 },
+          { header: 'Removed Reason',   key: 'removedReason',  width: 22 },
+          { header: 'Health Details',   key: 'healthDetails',  width: 25 },
+          { header: 'Ref1 Name',        key: 'ref1Name',       width: 18 },
+          { header: 'Ref1 Tel',         key: 'ref1Tel',        width: 14 },
+          { header: 'Ref2 Name',        key: 'ref2Name',       width: 18 },
+          { header: 'Ref2 Tel',         key: 'ref2Tel',        width: 14 },
+          { header: 'Decl. Date',       key: 'declarationDate',width: 14 },
+          { header: 'Decl. Place',      key: 'declarationPlace',width: 18},
+          { header: 'Reference',        key: 'reference',      width: 18 },
+        ];
+      } else if (isWorker) {
+        sheet.columns = [
+          { header: 'Photo',           key: 'photo',       width: 12 },
+          { header: 'Worker ID',       key: 'appId',       width: 14 },
+          { header: 'Date',            key: 'date',        width: 14 },
+          { header: 'Name',            key: 'name',        width: 22 },
+          { header: 'Contact',         key: 'contact',     width: 16 },
+          { header: 'Department',      key: 'department',  width: 18 },
+          { header: 'Designation',     key: 'designation', width: 18 },
+          { header: 'Contractor',      key: 'contractor',  width: 20 },
+          { header: 'Shift 1 IN',      key: 'inTime',      width: 12 },
+          { header: 'Shift 1 OUT',     key: 'outTime',     width: 12 },
+          { header: 'Totals Hours',    key: 's1Hours',     width: 14 },
+          { header: 'Attendance',      key: 'attendance',  width: 14 },
+          { header: 'Status',          key: 'status',      width: 10 },
+        ];
+      } else {
+        sheet.columns = [
+          { header: 'Photo',        key: 'photo',    width: 12 },
+          { header: 'App ID',       key: 'appId',    width: 12 },
+          { header: 'Date',         key: 'date',     width: 14 },
+          { header: 'Name',         key: 'name',     width: 22 },
+          { header: 'Contact',      key: 'contact',  width: 16 },
+          { header: 'Aadhaar/PAN',  key: 'idNumber', width: 16 },
+          { header: 'Category',     key: 'category', width: 14 },
+          { header: 'Whom to Meet', key: 'whom',     width: 20 },
+          { header: 'Purpose',      key: 'purpose',  width: 22 },
+          { header: 'In-Time',      key: 'inTime',   width: 10 },
+          { header: 'Out-Time',     key: 'outTime',  width: 10 },
+          { header: 'Status',       key: 'status',   width: 10 },
+        ];
+      }
+
+      // Style header row
+      const headerRow = sheet.getRow(1);
+      headerRow.height = 22;
+      headerRow.eachCell(cell => {
+        cell.fill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF7C5C2E' } };
+        cell.font   = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          bottom: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+        };
+      });
+
+      // Add data rows
+      for (let i = 0; i < filteredRecords.length; i++) {
+        const r = filteredRecords[i];
+        const rowIdx = i + 2; // 1-indexed, row 1 = header
+        const ROW_HEIGHT = 65;
+
+        let rowData;
+        if (isInterview) {
+          const recordDate = r.createdAt ? new Date(r.createdAt.toDate ? r.createdAt.toDate() : r.createdAt).toLocaleDateString('en-IN') : '';
+          
+          rowData = {
+            appId: r.appId || '',
+            parentAppId: r.parentAppId || '',
+            recordDate: recordDate,
+            title: r.title || '',
+            firstname: r.firstname || '',
+            middleName: r.middleName || '',
+            surname: r.surname || '',
+            contact: r.contact ? '+91' + r.contact : '',
+            mobileAlt: r.mobileAlt || '',
+            email: r.email || '',
+            positionApplied: r.positionApplied || '',
+            dob: r.dob || '',
+            age: r.age || '',
+            maritalStatus: r.maritalStatus || '',
+            bloodGroup: r.bloodGroup || '',
+            panNumber: r.panNumber || '',
+            fatherName: r.fatherName || '',
+            fatherOccupation: r.fatherOccupation || '',
+            motherName: r.motherName || '',
+            motherOccupation: r.motherOccupation || '',
+            residentialAddress: r.residentialAddress || '',
+            permanentAddress: r.permanentAddress || '',
+            relName: r.relName || '',
+            relRelation: r.relRelation || '',
+            relContact: r.relContact || '',
+            prevApplied: r.prevApplied || '',
+            prevDetails: r.prevDetails || '',
+            presentCTC: r.presentCTC || '',
+            expectedCTC: r.expectedCTC || '',
+            removedFromJob: r.removedFromJob || '',
+            removedCompany: r.removedCompany || '',
+            removedReason: r.removedReason || '',
+            healthDetails: r.healthDetails || '',
+            ref1Name: r.ref1Name || '',
+            ref1Tel: r.ref1Tel || '',
+            ref2Name: r.ref2Name || '',
+            ref2Tel: r.ref2Tel || '',
+            declarationDate: r.declarationDate || '',
+            declarationPlace: r.declarationPlace || '',
+            reference: r.reference || '',
+          };
+        } else if (isWorker) {
+          const s1h = calcHours(r.inTime, r.outTime);
+          const attendStr = r.attendance === 'late' ? 'Late'
+            : r.attendance === 'half_day' ? 'Half Day'
+            : 'Full Day';
+          const workerId = r.workerId || r.cwId || r.appId || r.id || '';
+          rowData = {
+            photo: '',
+            appId: workerId,
+            date:  r.date  || '',
+            name:  r.name  || '',
+            contact: r.contact ? '+91' + r.contact : '',
+            department:  r.department  || '',
+            designation: r.designation || '',
+            contractor:  r.contractorName || r.contractor || '',
+            inTime:    r.inTime   || '',
+            outTime:   r.outTime  || '',
+            s1Hours:   s1h,
+            attendance: attendStr,
+            status:    r.status === 'exited' ? 'Exited' : 'Inside',
+          };
+        } else {
+          rowData = {
+            photo: '',
+            appId:    r.appId    || '',
+            date:     r.date     || '',
+            name:     r.name     || '',
+            contact:  r.contact ? '+91' + r.contact : '',
+            idNumber: r.idNumber || '',
+            category: r.category || '',
+            whom:     r.whom     || '',
+            purpose:  r.purpose  || '',
+            inTime:   r.inTime   || '',
+            outTime:  r.outTime  || '',
+            status:   r.status === 'exited' ? 'Exited' : 'Inside',
+          };
+        }
+
+        const row = sheet.addRow(rowData);
+        row.height = ROW_HEIGHT;
+
+        // Style data cells
+        row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+          cell.alignment = { vertical: 'middle', horizontal: colNum === 1 ? 'center' : 'left', wrapText: true };
+          cell.border = {
+            top:    { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            left:   { style: 'thin', color: { argb: 'FFE8DDD0' } },
+            right:  { style: 'thin', color: { argb: 'FFE8DDD0' } },
+          };
+          if (i % 2 === 1) {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFDF3E3' } };
+          }
+        });
+
+        // Embed photo if available
+        if (!isInterview && r.photo && r.photo.startsWith('data:image')) {
+          try {
+            const ext = r.photo.includes('data:image/png') ? 'png' : 'jpeg';
+            const base64Data = r.photo.split(',')[1];
+            const imageId = workbook.addImage({ base64: base64Data, extension: ext });
+            // Place image in col 1 (photo column), with 4px padding
+            sheet.addImage(imageId, {
+              tl: { col: 0.1, row: rowIdx - 1 + 0.1 },
+              br: { col: 0.9, row: rowIdx - 0.1 },
+              editAs: 'oneCell',
+            });
+          } catch(imgErr) {
+            console.warn('Photo embed failed for row', rowIdx, imgErr);
+          }
+        }
+
+        // No special coloring needed for interview data rows
+        if (!isInterview) {
+          // Color status cell for visitors/workers
+          const statusColIdx = isWorker ? 11 : 12;
+          const statusCell = row.getCell(statusColIdx);
+          if (r.status === 'exited') {
+            statusCell.font = { color: { argb: 'FFE53E3E' }, bold: true };
+          } else {
+            statusCell.font = { color: { argb: 'FF38A169' }, bold: true };
+          }
+        }
+      }
+
+      // Freeze header row
+      sheet.views = [{ state: 'frozen', ySplit: 1 }];
+
+      // Generate and download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      hideLoader();
+      showToast(`✅ ${filteredRecords.length} records download ho gaye (photos embedded)!`);
+    } catch(err) {
+      hideLoader();
+      showToast('❌ Excel error: ' + err.message);
+      console.error(err);
+    }
+  };
+
+
+  window.toggleDetail = function(rowId) {
+    const row = document.getElementById(rowId);
+    const icon = document.getElementById('toggle-' + rowId);
+    if (!row) return;
+    const isHidden = row.classList.contains('hidden');
+    row.classList.toggle('hidden', !isHidden);
+    if (icon) icon.textContent = isHidden ? '▼' : '▶';
+  };
+
+  // Keep downloadCSV as alias
+  window.downloadCSV = window.downloadExcel;
+
+  // ========== CONTRACT WORKER FUNCTIONS ==========
+  window.handleCWPhoto = function(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX = 300;
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } } else { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        cwPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        const p = document.getElementById('cw-photo-preview');
+        p.src = cwPhotoBase64; p.style.display = 'block';
+        document.getElementById('cw-photo-icon').style.display = 'none';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  };
+
+  window.saveContractWorker = async function() {
+    const name = document.getElementById('cw-name').value.trim();
+    const contact = document.getElementById('cw-contact').value.trim();
+    const dept = document.getElementById('cw-dept').value;
+    const desig = document.getElementById('cw-desig').value;
+    const contractor = document.getElementById('cw-contractor').value;
+    const idnum = document.getElementById('cw-idnum').value.trim().toUpperCase();
+    if (!name) { showToast('⚠️ Karigar name required!'); return; }
+    if (!contact || contact.length < 10) { showToast('⚠️ Valid 10-digit contact required!'); return; }
+    if (!idnum || idnum.length !== 4) { showToast('⚠️ Aadhaar ya PAN ke last 4 digits/characters zaroor bharein!'); return; }
+    const cwId = 'CW-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    showLoader('Karigar profile save ho raha hai...');
+    try {
+      const docRef = await addDoc(collection(db, 'contractual_workers'), {
+        cwId, name, contact, department: dept, designation: desig,
+        contractorName: contractor, idNumber: idnum, photo: cwPhotoBase64 || null, createdAt: serverTimestamp()
+      });
+      // Add to local array
+      allContractWorkers.unshift({ id: docRef.id, cwId, name, contact, department: dept, designation: desig, contractorName: contractor, idNumber: idnum, photo: cwPhotoBase64 || null });
+      hideLoader();
+      showToast('✅ Karigar saved! QR generated.');
+      // Clear form
+      ['cw-name','cw-contact','cw-idnum'].forEach(id => document.getElementById(id).value = '');
+      ['cw-dept','cw-desig','cw-contractor'].forEach(id => document.getElementById(id).value = '');
+      cwPhotoBase64 = '';
+      document.getElementById('cw-photo-preview').style.display = 'none';
+      document.getElementById('cw-photo-icon').style.display = 'block';
+      document.getElementById('cw-photo-input').value = '';
+      renderContractWorkers(allContractWorkers);
+    } catch(err) { hideLoader(); showToast('❌ Error: ' + err.message); }
+  };
+
+  window.deleteContractWorker = async function(docId) {
+    if (!confirm('Delete this worker? Their QR will become invalid.')) return;
+    showLoader('Deleting...');
+    try {
+      await deleteDoc(doc(db, 'contractual_workers', docId));
+      allContractWorkers = allContractWorkers.filter(w => w.id !== docId);
+      hideLoader();
+      showToast('✅ Worker deleted.');
+      renderContractWorkers(allContractWorkers);
+    } catch(err) { hideLoader(); showToast('❌ Error: ' + err.message); }
+  };
+
+  function renderContractWorkers(workers) {
+    const grid = document.getElementById('cw-list-grid');
+    const countEl = document.getElementById('cw-count');
+    if (!grid) return;
+    if (countEl) countEl.textContent = workers.length + ' karigar';
+    if (workers.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:32px;grid-column:1/-1;"><div style="font-size:36px;margin-bottom:10px;">👷</div><div>No contract karigar added yet</div></div>';
+      return;
+    }
+    grid.innerHTML = workers.map(w => {
+      const photoHtml = w.photo
+        ? `<img src="${w.photo}" class="cw-worker-photo" alt="photo" />`
+        : `<div class="cw-worker-initials">${(w.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>`;
+      return `
+        <div class="cw-worker-card">
+          ${photoHtml}
+          <div class="cw-worker-name">${w.name}</div>
+          <div class="cw-worker-info">${[w.designation, w.department].filter(Boolean).join(' • ') || '—'}</div>
+          ${w.contractorName ? `<div class="cw-worker-info">🏗 ${w.contractorName}</div>` : ''}
+          <div class="cw-worker-id">${w.cwId}</div>
+          <div class="cw-qr-container" id="qr-${w.cwId.replace(/-/g,'')}"></div>
+          <div class="cw-card-btns">
+            <button class="cw-download-btn" onclick="downloadWorkerQR('${w.cwId}','${w.name}')">⬇ Download QR</button>
+            <button class="cw-delete-btn" onclick="deleteContractWorker('${w.id}')">🗑</button>
+          </div>
+        </div>`;
+    }).join('');
+    // Generate QR codes after render
+    function generateQRs() {
+      workers.forEach(w => {
+        const containerId = 'qr-' + w.cwId.replace(/-/g,'');
+        const container = document.getElementById(containerId);
+        if (container && container.children.length === 0) {
+          try {
+            if (typeof QRCode === 'undefined') { container.innerHTML = `<div style="font-size:10px;color:#c9973a;padding:4px;">${w.cwId}</div>`; return; }
+            new QRCode(container, { text: w.cwId, width: 120, height: 120, colorDark: '#1a1a2e', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+          } catch(e) { container.innerHTML = `<div style="font-size:10px;color:#c9973a;padding:4px;">${w.cwId}</div>`; }
+        }
+      });
+    }
+    setTimeout(generateQRs, 200);
+  }
+
+  window.downloadWorkerQR = function(cwId, workerName) {
+    const containerId = 'qr-' + cwId.replace(/-/g,'');
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const qrCanvas = container.querySelector('canvas');
+    if (!qrCanvas) { showToast('⚠️ QR not ready yet'); return; }
+
+    const w = allContractWorkers.find(x => x.cwId === cwId) || { name: workerName, cwId };
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawCard(photoImg) {
+      const cardW = 300;
+      const cx = cardW / 2;
+      let y = 28;
+
+      // --- Calculate dynamic height ---
+      const hasPhoto = !!photoImg;
+      const hasInfo  = !!(w.designation || w.department);
+      const hasCont  = !!w.contractorName;
+      const photoR   = 38;
+      let estH = 28 + photoR * 2 + 16  // photo circle
+                + 20                    // name
+                + (hasInfo ? 18 : 0)
+                + (hasCont ? 16 : 0)
+                + 8 + 26 + 14           // pill
+                + 140 + 14              // QR
+                + 16 + 20;             // footer + padding
+
+      const cardH = estH;
+      const combined = document.createElement('canvas');
+      combined.width = cardW;
+      combined.height = cardH;
+      const ctx = combined.getContext('2d');
+
+      // Card background
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, 0, 0, cardW, cardH, 16);
+      ctx.fill();
+
+      // Card border
+      ctx.strokeStyle = '#e8ddd0';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 0, 0, cardW, cardH, 16);
+      ctx.stroke();
+
+      // --- Photo circle ---
+      const photoX = cx, photoY = y + photoR;
+      if (photoImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(photoX, photoY, photoR, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(photoImg, photoX - photoR, photoY - photoR, photoR * 2, photoR * 2);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#fdf3e3';
+        ctx.beginPath();
+        ctx.arc(photoX, photoY, photoR, 0, Math.PI * 2);
+        ctx.fill();
+        const initials = (w.name || '?').split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
+        ctx.fillStyle = '#c9973a';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(initials, photoX, photoY);
+      }
+      // circle border
+      ctx.strokeStyle = '#e8ddd0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(photoX, photoY, photoR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      y = photoY + photoR + 16;
+
+      // --- Name ---
+      ctx.fillStyle = '#1a1a2e';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      const nameText = w.name || workerName;
+      ctx.fillText(nameText.length > 28 ? nameText.substr(0, 28) + '…' : nameText, cx, y);
+      y += 20;
+
+      // --- Designation • Department ---
+      if (hasInfo) {
+        const info = [w.designation, w.department].filter(Boolean).join(' • ');
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(info.length > 34 ? info.substr(0, 34) + '…' : info, cx, y);
+        y += 18;
+      }
+
+      // --- Contractor ---
+      if (hasCont) {
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('🏗 ' + w.contractorName, cx, y);
+        y += 16;
+      }
+
+      y += 8;
+
+      // --- CW ID pill ---
+      ctx.font = 'bold 12px sans-serif';
+      const pillText = cwId;
+      const pillW = ctx.measureText(pillText).width + 28;
+      const pillH = 24;
+      const pillX = cx - pillW / 2;
+      ctx.fillStyle = '#fdf3e3';
+      roundRect(ctx, pillX, y, pillW, pillH, 12);
+      ctx.fill();
+      ctx.strokeStyle = '#f0dbb8';
+      ctx.lineWidth = 1;
+      roundRect(ctx, pillX, y, pillW, pillH, 12);
+      ctx.stroke();
+      ctx.fillStyle = '#c9973a';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(pillText, cx, y + pillH / 2);
+      y += pillH + 14;
+
+      // --- QR code ---
+      const qrSize = 140;
+      ctx.drawImage(qrCanvas, cx - qrSize / 2, y, qrSize, qrSize);
+      y += qrSize + 14;
+
+      // --- Company footer ---
+      ctx.fillStyle = '#c9973a';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('Kiara Jewellery Pvt. Ltd.', cx, y);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = 'QR_' + (w.name || workerName).replace(/\s+/g, '_') + '_' + cwId + '.png';
+      link.href = combined.toDataURL('image/png');
+      link.click();
+      showToast('✅ QR downloaded!');
+    }
+
+    if (w.photo) {
+      const img = new Image();
+      img.onload  = () => drawCard(img);
+      img.onerror = () => drawCard(null);
+      img.src = w.photo;
+    } else {
+      drawCard(null);
+    }
+  };
+
+  // ========== CAMERA MODAL ==========
+  let _cwStream = null;
+
+  window.openCWCamera = function() {
+    const modal = document.getElementById('cw-camera-modal');
+    const video = document.getElementById('cw-camera-video');
+    modal.style.display = 'flex';
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+      .then(stream => {
+        _cwStream = stream;
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(err => {
+        closeCWCamera();
+        // fallback — direct file picker
+        document.getElementById('cw-photo-input').click();
+      });
+  };
+
+  window.closeCWCamera = function() {
+    if (_cwStream) { _cwStream.getTracks().forEach(t => t.stop()); _cwStream = null; }
+    document.getElementById('cw-camera-modal').style.display = 'none';
+    document.getElementById('cw-camera-video').srcObject = null;
+  };
+
+  window.captureCWPhoto = function() {
+    const video  = document.getElementById('cw-camera-video');
+    const canvas = document.createElement('canvas');
+    canvas.width  = video.videoWidth  || 400;
+    canvas.height = video.videoHeight || 400;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const MAX = 600;
+    let w = canvas.width, h = canvas.height;
+    if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+    else        { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    out.getContext('2d').drawImage(canvas, 0, 0, w, h);
+    cwPhotoBase64 = out.toDataURL('image/jpeg', 0.8);
+    const preview = document.getElementById('cw-photo-preview');
+    preview.src = cwPhotoBase64;
+    preview.style.display = 'block';
+    document.getElementById('cw-photo-icon').style.display = 'none';
+    closeCWCamera();
+  };
+
+  // ========== PERMANENT VISITOR FUNCTIONS ==========
+  window.handlePVPhoto = function(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      pvPhotoBase64 = e.target.result;
+      const preview = document.getElementById('pv-photo-preview');
+      preview.src = pvPhotoBase64;
+      preview.style.display = 'block';
+      document.getElementById('pv-photo-icon').style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  };
+
+  window.openPVCamera = function() {
+    const modal = document.getElementById('cw-camera-modal');
+    const video = document.getElementById('cw-camera-video');
+    modal.style.display = 'flex';
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+      .then(stream => {
+        _cwStream = stream;
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(err => {
+        closeCWCamera();
+        document.getElementById('pv-photo-input').click();
+      });
+  };
+
+  window.savePermanentVisitor = async function() {
+    const name = document.getElementById('pv-name').value.trim();
+    const contact = document.getElementById('pv-contact').value.trim();
+    const whom = document.getElementById('pv-whom').value;
+    const purpose = document.getElementById('pv-purpose').value;
+    const idnum = document.getElementById('pv-idnum').value.trim().toUpperCase();
+
+    console.log('Form data:', { name, contact, whom, purpose, idnum });
+
+    if (!name) {
+      showToast('⚠️ Name is required!');
+      return;
+    }
+    if (!contact) {
+      showToast('⚠️ Contact number is required!');
+      return;
+    }
+    if (contact.length < 10) {
+      showToast('⚠️ Enter valid 10-digit number');
+      return;
+    }
+    if (!whom) {
+      showToast('⚠️ Whom to Meet is required!');
+      return;
+    }
+    if (!idnum) {
+      showToast('⚠️ ID Number is required!');
+      return;
+    }
+
+    showLoader('Saving permanent visitor...');
+    try {
+      const pvId = 'PV-' + Math.floor(1000 + Math.random() * 9000);
+      console.log('Saving with pvId:', pvId);
+
+      const docRef = await addDoc(collection(db, 'permanent_visitors'), {
+        pvId,
+        name,
+        contact,
+        whomToSee: whom,
+        purpose: purpose || 'General Visit',
+        idnum,
+        photo: pvPhotoBase64 || null,
+        createdAt: serverTimestamp()
+      });
+
+      console.log('Saved with doc ID:', docRef.id);
+
+      hideLoader();
+      showToast('✅ Permanent Visitor saved!');
+
+      // Clear form
+      document.getElementById('pv-name').value = '';
+      document.getElementById('pv-contact').value = '';
+      document.getElementById('pv-whom').value = '';
+      document.getElementById('pv-purpose').value = '';
+      document.getElementById('pv-idnum').value = '';
+      pvPhotoBase64 = '';
+      document.getElementById('pv-photo-preview').style.display = 'none';
+      document.getElementById('pv-photo-icon').style.display = 'block';
+      document.getElementById('pv-photo-input').value = '';
+
+      // Reload data
+      const qpv = query(collection(db, 'permanent_visitors'), orderBy('createdAt', 'desc'));
+      const snapPV = await getDocs(qpv);
+      allPermanentVisitors = [];
+      snapPV.forEach(docSnap => { allPermanentVisitors.push({ id: docSnap.id, ...docSnap.data() }); });
+      console.log('Loaded visitors:', allPermanentVisitors.length);
+      renderPermanentVisitors(allPermanentVisitors);
+    } catch(err) {
+      hideLoader();
+      console.error('Error saving:', err);
+      showToast('❌ Error: ' + err.message);
+    }
+  };
+
+  window.deletePermanentVisitor = async function(docId) {
+    if (!confirm('Are you sure you want to delete this permanent visitor?')) return;
+    showLoader('Deleting...');
+    try {
+      await deleteDoc(doc(db, 'permanent_visitors', docId));
+      allPermanentVisitors = allPermanentVisitors.filter(v => v.id !== docId);
+      hideLoader();
+      showToast('✅ Visitor deleted.');
+      renderPermanentVisitors(allPermanentVisitors);
+    } catch(err) { hideLoader(); showToast('❌ Error: ' + err.message); }
+  };
+
+  function renderPermanentVisitors(visitors) {
+    const grid = document.getElementById('pv-list-grid');
+    const countEl = document.getElementById('pv-count');
+    if (!grid) return;
+    if (countEl) countEl.textContent = visitors.length + ' visitors';
+    if (visitors.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:32px;grid-column:1/-1;"><div style="font-size:36px;margin-bottom:10px;">🏢</div><div>No permanent visitor added yet</div></div>';
+      return;
+    }
+    grid.innerHTML = visitors.map(v => {
+      const photoHtml = v.photo
+        ? `<img src="${v.photo}" class="cw-worker-photo" alt="photo" />`
+        : `<div class="cw-worker-initials">${(v.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>`;
+      return `
+        <div class="cw-worker-card">
+          ${photoHtml}
+          <div class="cw-worker-name">${v.name}</div>
+          <div class="cw-worker-info">${v.purpose || 'General Visit'}</div>
+          ${v.whomToSee ? `<div class="cw-worker-info">👤 ${v.whomToSee}</div>` : ''}
+          <div class="cw-worker-id">${v.pvId}</div>
+          <div class="cw-qr-container" id="qr-pv-${v.pvId.replace(/-/g,'')}"></div>
+          <div class="cw-card-btns">
+            <button class="cw-download-btn" onclick="downloadVisitorQR('${v.pvId}','${v.name}')">⬇ Download QR</button>
+            <button class="cw-delete-btn" onclick="deletePermanentVisitor('${v.id}')">🗑</button>
+          </div>
+        </div>`;
+    }).join('');
+    // Generate QR codes after render
+    function generateQRs() {
+      visitors.forEach(v => {
+        const containerId = 'qr-pv-' + v.pvId.replace(/-/g,'');
+        const container = document.getElementById(containerId);
+        if (container && container.children.length === 0) {
+          try {
+            if (typeof QRCode === 'undefined') {
+              container.innerHTML = `<div style="font-size:10px;color:#c9973a;padding:4px;">${v.pvId}</div>`;
+              console.log('QRCode library not loaded');
+              return;
+            }
+            console.log('Generating QR for:', v.pvId);
+            new QRCode(container, { text: v.pvId, width: 120, height: 120, colorDark: '#1a1a2e', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+          } catch(e) {
+            console.error('Error generating QR:', e);
+            container.innerHTML = `<div style="font-size:10px;color:#c9973a;padding:4px;">${v.pvId}</div>`;
+          }
+        }
+      });
+    }
+    setTimeout(generateQRs, 200);
+  }
+
+  window.downloadVisitorQR = function(pvId, visitorName) {
+    const containerId = 'qr-pv-' + pvId.replace(/-/g,'');
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const qrCanvas = container.querySelector('canvas');
+    if (!qrCanvas) { showToast('⚠️ QR not ready yet'); return; }
+
+    const v = allPermanentVisitors.find(x => x.pvId === pvId) || { name: visitorName, pvId };
+
+    // Check if QRCode library is loaded
+    if (typeof QRCode === 'undefined') {
+      showToast('❌ QR library not loaded');
+      return;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawCard(photoImg) {
+      const cardW = 300;
+      const cx = cardW / 2;
+      let y = 28;
+
+      const hasPhoto = !!photoImg;
+      const hasInfo  = !!(v.purpose);
+      const hasContact = !!(v.contact);
+      const hasWhom = !!(v.whomToSee);
+      const photoR   = 38;
+      let estH = 28 + photoR * 2 + 16
+                + 20
+                + (hasInfo ? 18 : 0)
+                + (hasContact ? 16 : 0)
+                + (hasWhom ? 16 : 0)
+                + 8 + 26 + 14
+                + 140 + 14
+                + 16 + 20;
+
+      const cardH = estH;
+      const combined = document.createElement('canvas');
+      combined.width = cardW;
+      combined.height = cardH;
+      const ctx = combined.getContext('2d');
+
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, 0, 0, cardW, cardH, 16);
+      ctx.fill();
+
+      ctx.strokeStyle = '#e8ddd0';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 0, 0, cardW, cardH, 16);
+      ctx.stroke();
+
+      if (hasPhoto) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, y + photoR, photoR, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(photoImg, cx - photoR, y, photoR * 2, photoR * 2);
+        ctx.restore();
+        ctx.strokeStyle = '#c9973a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, y + photoR, photoR, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#fdf3e3';
+        ctx.beginPath();
+        ctx.arc(cx, y + photoR, photoR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#c9973a';
+        ctx.font = 'bold 18px DM Sans';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText((v.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase(), cx, y + photoR);
+      }
+
+      y += photoR * 2 + 20;
+      ctx.fillStyle = '#1a1a2e';
+      ctx.font = 'bold 16px Playfair Display';
+      ctx.textAlign = 'center';
+      ctx.fillText(v.name || '—', cx, y);
+      y += 20;
+
+      if (hasInfo) {
+        ctx.fillStyle = '#6b5035';
+        ctx.font = '12px DM Sans';
+        ctx.fillText(v.purpose || '—', cx, y);
+        y += 18;
+      }
+
+      if (hasContact) {
+        ctx.fillStyle = '#6b5035';
+        ctx.font = '11px DM Sans';
+        ctx.fillText('📱 ' + (v.contact || '—'), cx, y);
+        y += 16;
+      }
+
+      if (hasWhom) {
+        ctx.fillStyle = '#6b5035';
+        ctx.font = '11px DM Sans';
+        ctx.fillText('👤 ' + (v.whomToSee || '—'), cx, y);
+        y += 16;
+      }
+
+      y += 8;
+      ctx.fillStyle = '#fdf3e3';
+      roundRect(ctx, cx - 50, y, 100, 26, 13);
+      ctx.fill();
+      ctx.fillStyle = '#c9973a';
+      ctx.font = 'bold 12px DM Sans';
+      ctx.textAlign = 'center';
+      ctx.fillText(v.pvId, cx, y + 17);
+      y += 26 + 14;
+
+      ctx.drawImage(qrCanvas, cx - 70, y, 140, 140);
+      y += 140 + 14;
+
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '10px DM Sans';
+      ctx.textAlign = 'center';
+      ctx.fillText('Kiara Jewellery — Permanent Visitor', cx, y + 12);
+      y += 16;
+
+      ctx.fillStyle = '#6b5035';
+      ctx.font = '10px DM Sans';
+      ctx.fillText('SEEPZ-SEZ, Andheri (E), Mumbai — 400096', cx, y + 12);
+
+      return combined;
+    }
+
+    if (v.photo) {
+      const img = new Image();
+      img.onload = () => {
+        const card = drawCard(img);
+        const link = document.createElement('a');
+        link.download = `${v.name.replace(/\s+/g,'_')}_QR.png`;
+        link.href = card.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('✅ QR downloaded!');
+      };
+      img.onerror = () => {
+        const card = drawCard(null);
+        const link = document.createElement('a');
+        link.download = `${v.name.replace(/\s+/g,'_')}_QR.png`;
+        link.href = card.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('✅ QR downloaded!');
+      };
+      img.src = v.photo;
+    } else {
+      const card = drawCard(null);
+      const link = document.createElement('a');
+      link.download = `${v.name.replace(/\s+/g,'_')}_QR.png`;
+      link.href = card.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('✅ QR downloaded!');
+    }
+  };
+</script>
+
+<!-- Camera Modal -->
+<div id="cw-camera-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="background:#1a1a2e;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:420px;width:90%;">
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#c9973a;">📷 Karigar Photo</div>
+    <video id="cw-camera-video" autoplay playsinline style="width:100%;border-radius:12px;background:#000;max-height:320px;object-fit:cover;"></video>
+    <div style="display:flex;gap:12px;width:100%;">
+      <button onclick="captureCWPhoto()" style="flex:1;padding:12px;background:#c9973a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">📸 Capture</button>
+      <button onclick="closeCWCamera()" style="padding:12px 18px;background:#374151;color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Cancel</button>
+    </div>
+    <div style="font-size:11px;color:#6b7280;text-align:center;">Ya file se upload karo:</div>
+    <button onclick="closeCWCamera();document.getElementById('cw-photo-input').click();" style="width:100%;padding:9px;background:#374151;color:#d1d5db;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">📁 Gallery se Choose karo</button>
+  </div>
+</div>
+</body>
+</html>
